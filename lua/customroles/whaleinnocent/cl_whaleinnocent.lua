@@ -9,10 +9,6 @@ local Utf8Upper = utf8.upper
 -- CONVARS --
 -------------
 
-local whaleinnocent_show_team_threshold = GetConVar("TTT_InnocentWhale_show_team_threshold")
-local whaleinnocent_show_role_threshold = GetConVar("TTT_InnocentWhale_show_role_threshold")
-local whaleinnocent_can_guess_detectives = GetConVar("TTT_InnocentWhale_can_guess_detectives")
-local whaleinnocent_warn_all = GetConVar("TTT_InnocentWhale_warn_all")
 local glitch_mode = GetConVar("ttt_glitch_mode")
 local hide_role = GetConVar("ttt_hide_role")
 

@@ -129,7 +129,7 @@ if SERVER then
 
             self:SetState(STATE_BUSY)
             self:SetBeginTime(CurTime())
-            self:SetMessage("Changing role!")
+            self:SetMessage("Changing role to " .. ROLE_STRINGS[role] .. "!")
 
             self:GetOwner():EmitSound("items/nvg_on.wav", 75, 100)
         end
@@ -157,7 +157,7 @@ if SERVER then
         self:SetState(STATE_DONE)
         self:SetBeginTime(CurTime())
         self:SetMessage("Role changed successfully!")
-        owner:QueueMessage(MSG_PRINTCENTER, "Role changed successfully!", 3)
+        owner:QueueMessage(MSG_PRINTCENTER, "Role changed successfully to " .. ROLE_STRINGS[role] .. "!", 3)
 
         net.Start("RoleChange_Success")
         net.Send(self:GetOwner())
