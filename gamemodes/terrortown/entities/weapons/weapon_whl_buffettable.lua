@@ -64,8 +64,8 @@ SWEP.Secondary.ClipMax      = -1
 SWEP.Secondary.DefaultClip  = -1
 SWEP.Secondary.Sound        = ""
 
-SWEP.InLoadoutFor           = {ROLE_WHALEINNOCENT}
-SWEP.InLoadoutForDefault    = {ROLE_WHALEINNOCENT}
+SWEP.InLoadoutFor           = {ROLE_WHALEINNOCENT, ROLE_WHALEDETECTIVE, ROLE_WHALEINDEPENDENT, ROLE_WHALEJESTER, ROLE_WHALEMONSTER, ROLE_WHALETRAITOR}
+SWEP.InLoadoutForDefault    = {ROLE_WHALEINNOCENT, ROLE_WHALEDETECTIVE, ROLE_WHALEINDEPENDENT, ROLE_WHALEJESTER, ROLE_WHALEMONSTER, ROLE_WHALETRAITOR}
 
 if SERVER then
     CreateConVar("ttt_innocentwhale_minimum_radius", "5", FCVAR_NONE, "The minimum radius of the whaleinnocent's device in meters. Set to 0 to disable", 0, 30)
