@@ -16,31 +16,31 @@ local hide_role = GetConVar("ttt_hide_role")
 -- TRANSLATIONS --
 ------------------
 
-AddHook("Initialize", "Whaleinnocent_Translations_Initialize", function()
+AddHook("Initialize", "Whaletraitor_Translations_Initialize", function()
     -- Weapons
     LANG.AddToLanguage("english", "guessingdevice_help_pri", "Press {primaryfire} to guess a player's role.")
     LANG.AddToLanguage("english", "guessingdevice_help_sec", "Press {secondaryfire} to select a role.")
-    LANG.AddToLanguage("english", "guessingdevice_title", "Role Whaleinnocent Selection")
+    LANG.AddToLanguage("english", "guessingdevice_title", "Role Whaletraitor Selection")
 
     -- HUD
-    LANG.AddToLanguage("english", "whaleinnocent_selection", "Role Selected: ")
+    LANG.AddToLanguage("english", "whaletraitor_selection", "Role Selected: ")
 
     -- Target ID
-    LANG.AddToLanguage("english", "whaleinnocent_unguessable", "UNGUESSABLE")
+    LANG.AddToLanguage("english", "whaletraitor_unguessable", "UNGUESSABLE")
 
     -- Scoring
-    LANG.AddToLanguage("english", "score_whaleinnocent_guessed_by", "Guessed by")
+    LANG.AddToLanguage("english", "score_whaletraitor_guessed_by", "Guessed by")
 
     -- Events
-    LANG.AddToLanguage("english", "ev_whaleinnocent_correct", "{whaleinnocent} correctly guessed {victim}'s role")
+    LANG.AddToLanguage("english", "ev_whaletraitor_correct", "{whaletraitor} correctly guessed {victim}'s role")
 
-    LANG.AddToLanguage("english", "ev_whaleinnocent_incorrect", "{whaleinnocent} incorrectly guessed {victim}'s role")
+    LANG.AddToLanguage("english", "ev_whaletraitor_incorrect", "{whaletraitor} incorrectly guessed {victim}'s role")
 
     -- Cheat Sheet
-    LANG.AddToLanguage("english", "cheatsheet_desc_whaleinnocent", "Must choose a role of their alignment to become.")
+    LANG.AddToLanguage("english", "cheatsheet_desc_whaletraitor", "Must choose a role of their alignment to become.")
 
     -- Popup
-    LANG.AddToLanguage("english", "info_popup_whaleinnocent", [[You are {role}! Open your Buffet Table weapon with {secondaryfire},
+    LANG.AddToLanguage("english", "info_popup_whaletraitor", [[You are {role}! Open your Buffet Table weapon with {secondaryfire},
     select a role, then use {primaryfire} to become that role.]])
 end)
 
@@ -55,7 +55,7 @@ AddHook("TTTHUDInfoPaint", "Whale_TTTHUDInfoPaint", function(client, label_left,
         surface.SetFont("TabLarge")
         surface.SetTextColor(255, 255, 255, 230)
 
-        local text = LANG.GetTranslation("whaleinnocent_selection")
+        local text = LANG.GetTranslation("whaletraitor_selection")
         local w, h = surface.GetTextSize(text)
 
         -- Move this up based on how many other labels there are
@@ -64,7 +64,7 @@ AddHook("TTTHUDInfoPaint", "Whale_TTTHUDInfoPaint", function(client, label_left,
         surface.SetTextPos(label_left, ScrH() - label_top - h)
         surface.DrawText(text)
 
-        local role = client:GetNWInt("TTTInnocentWhaleSelection", ROLE_NONE)
+        local role = client:GetNWInt("TTTTraitorWhaleSelection", ROLE_NONE)
         if role == ROLE_NONE then
             text = "None"
         else
@@ -79,18 +79,18 @@ AddHook("TTTHUDInfoPaint", "Whale_TTTHUDInfoPaint", function(client, label_left,
         surface.DrawText(text)
 
         -- Track that the label was added so others can position accurately
-        table.insert(active_labels, "whaleinnocent")
+        table.insert(active_labels, "whaletraitor")
     end
 end)
 --------------
 -- TUTORIAL --
 --------------
 
-hook.Add("TTTTutorialRoleText", "Whaleinnocent_TTTTutorialRoleText", function(role, titleLabel)
-    if role == ROLE_WHALEINNOCENT then
-        local roleColor = GetRoleTeamColor(ROLE_TEAM_JESTER)
+hook.Add("TTTTutorialRoleText", "Whaletraitor_TTTTutorialRoleText", function(role, titleLabel)
+    if role == ROLE_WHALETRAITOR then
+        local roleColor = GetRoleTeamColor(ROLE_TEAM_TRAITOR)
         local detectiveColor = ROLE_COLORS[ROLE_DETECTIVE]
-        local html = "The " .. ROLE_STRINGS[ROLE_WHALEINNOCENT] .. " is an <span style='color: rgb(" .. roleColor.r .. ", " .. roleColor.g .. ", " .. roleColor.b .. ")'>innocent</span> role who can become any other innocent role of their choice."
+        local html = "The " .. ROLE_STRINGS[ROLE_WHALETRAITOR] .. " is a <span style='color: rgb(" .. roleColor.r .. ", " .. roleColor.g .. ", " .. roleColor.b .. ")'>traitor</span> role who can become any other traitor role of their choice."
         return html
     end
 end)

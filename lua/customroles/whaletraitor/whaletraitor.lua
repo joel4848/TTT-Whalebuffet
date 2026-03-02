@@ -8,31 +8,31 @@ local hook = hook
 local PlayerIterator = player.Iterator
 local AddHook = hook.Add
 
-util.AddNetworkString("TTT_InnocentWhaleSelectRole")
-util.AddNetworkString("TTT_InnocentWhaleGuessed")
+util.AddNetworkString("TTT_TraitorWhaleSelectRole")
+util.AddNetworkString("TTT_TraitorWhaleGuessed")
 
 -------------
 -- CONVARS --
 -------------
 
-CreateConVar("ttt_innocentwhale_notify_mode", "0", FCVAR_NONE, "The logic to use when notifying players that a whaleinnocent was killed. Killer is notified unless \"TTT_InnocentWhale_notify_killer\" is disabled", 0, 4)
-CreateConVar("ttt_innocentwhale_notify_killer", "1", FCVAR_NONE, "Whether to notify a whaleinnocent's killer", 0, 1)
-CreateConVar("ttt_innocentwhale_notify_sound", "0", FCVAR_NONE, "Whether to play a cheering sound when a whaleinnocent is killed", 0, 1)
-CreateConVar("ttt_innocentwhale_notify_confetti", "0", FCVAR_NONE, "Whether to throw confetti when a whaleinnocent is a killed", 0, 1)
+CreateConVar("ttt_traitorwhale_notify_mode", "0", FCVAR_NONE, "The logic to use when notifying players that a whaletraitor was killed. Killer is notified unless \"TTT_TraitorWhale_notify_killer\" is disabled", 0, 4)
+CreateConVar("ttt_traitorwhale_notify_killer", "1", FCVAR_NONE, "Whether to notify a whaletraitor's killer", 0, 1)
+CreateConVar("ttt_traitorwhale_notify_sound", "0", FCVAR_NONE, "Whether to play a cheering sound when a whaletraitor is killed", 0, 1)
+CreateConVar("ttt_traitorwhale_notify_confetti", "0", FCVAR_NONE, "Whether to throw confetti when a whaletraitor is a killed", 0, 1)
 
-local whaleinnocent_show_team_threshold = GetConVar("TTT_InnocentWhale_show_team_threshold")
-local whaleinnocent_show_role_threshold = GetConVar("TTT_InnocentWhale_show_role_threshold")
-local whaleinnocent_can_guess_detectives = GetConVar("TTT_InnocentWhale_can_guess_detectives")
--- local whaleinnocent_warn_all = GetConVar("TTT_InnocentWhale_warn_all")
+local whaletraitor_show_team_threshold = GetConVar("TTT_TraitorWhale_show_team_threshold")
+local whaletraitor_show_role_threshold = GetConVar("TTT_TraitorWhale_show_role_threshold")
+local whaletraitor_can_guess_detectives = GetConVar("TTT_TraitorWhale_can_guess_detectives")
+-- local whaletraitor_warn_all = GetConVar("TTT_TraitorWhale_warn_all")
 
 -------------------
 -- ROLE FEATURES --
 -------------------
 
-net.Receive("TTT_InnocentWhaleSelectRole", function(_, ply)
+net.Receive("TTT_TraitorWhaleSelectRole", function(_, ply)
     if ply:IsActiveTraitorWhale() then
         local role = net.ReadInt(util.RoleBits())
-        ply:SetNWInt("TTTInnocentWhaleSelection", role)
+        ply:SetNWInt("TTTTraitorWhaleSelection", role)
     end
 end)
 
@@ -42,11 +42,11 @@ end)
 -- CLEANUP --
 -------------
 
-AddHook("TTTPrepareRound", "Whaleinnocent_TTTPrepareRound", function()
+AddHook("TTTPrepareRound", "Whaletraitor_TTTPrepareRound", function()
     for _, v in PlayerIterator() do
-        v:SetNWInt("TTTInnocentWhaleSelection", ROLE_NONE)
-        v:SetNWBool("TTTInnocentWhaleWasInnocentWhale", false)
-        v:SetNWString("TTTInnocentWhaleGuessedBy", "")
-        v:SetNWFloat("TTTInnocentWhaleDamageDealt", 0)
+        v:SetNWInt("TTTTraitorWhaleSelection", ROLE_NONE)
+        v:SetNWBool("TTTTraitorWhaleWasTraitorWhale", false)
+        v:SetNWString("TTTTraitorWhaleGuessedBy", "")
+        v:SetNWFloat("TTTTraitorWhaleDamageDealt", 0)
     end
 end)

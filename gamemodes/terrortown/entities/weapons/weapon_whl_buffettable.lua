@@ -67,10 +67,7 @@ SWEP.Secondary.Sound        = ""
 SWEP.InLoadoutFor           = {ROLE_WHALEINNOCENT, ROLE_WHALEDETECTIVE, ROLE_WHALEINDEPENDENT, ROLE_WHALEJESTER, ROLE_WHALEMONSTER, ROLE_WHALETRAITOR}
 SWEP.InLoadoutForDefault    = {ROLE_WHALEINNOCENT, ROLE_WHALEDETECTIVE, ROLE_WHALEINDEPENDENT, ROLE_WHALEJESTER, ROLE_WHALEMONSTER, ROLE_WHALETRAITOR}
 
-if SERVER then
-    CreateConVar("ttt_innocentwhale_minimum_radius", "5", FCVAR_NONE, "The minimum radius of the whaleinnocent's device in meters. Set to 0 to disable", 0, 30)
-end
-local whaleinnocent_unguessable_roles = CreateConVar("ttt_innocentwhale_unguessable_roles", "", FCVAR_REPLICATED, "Names of roles that cannot be guessed by the whaleinnocent, separated with commas. Do not include spaces or capital letters.")
+local whale_unchoosable_roles = CreateConVar("ttt_whale_unchoosable_roles", "", FCVAR_REPLICATED, "Names of roles that cannot be chosen by whales, separated with commas. Do not include spaces or capital letters.")
 
 SWEP.RoleChangeTime = 3 -- seconds required to complete
 
@@ -91,6 +88,8 @@ function SWEP:Initialize()
         self:AddHUDHelp("whalebuffettable_help_pri", "whalebuffettable_help_sec", true)
     end
     self:SetState(STATE_IDLE)
+
+
     return self.BaseClass.Initialize(self)
 end
 
@@ -101,6 +100,33 @@ end
 function SWEP:Deploy()
     if SERVER and IsValid(self:GetOwner()) then
         self:GetOwner():DrawViewModel(false)
+    end
+
+    local owner = self:GetOwner()
+    if owner:IsDetectiveWhale() then
+        self.tttwhaleselection = "TTTDetectiveWhaleSelection"
+        self.tttwhaleguessed = "TTT_DetectiveWhaleGuessed"
+        self.tttwhaleselectrole = "TTT_DetectiveWhaleSelectRole"
+    elseif owner:IsInnocentWhale() then
+        self.tttwhaleselection = "TTTInnocentWhaleSelection"
+        self.tttwhaleguessed = "TTT_InnocentWhaleGuessed"
+        self.tttwhaleselectrole = "TTT_InnocentWhaleSelectRole"
+    elseif owner:IsTraitorWhale() then
+        self.tttwhaleselection = "TTTTraitorWhaleSelection"
+        self.tttwhaleguessed = "TTT_TraitorWhaleGuessed"
+        self.tttwhaleselectrole = "TTT_TraitorWhaleSelectRole"
+    elseif owner:IsJesterWhale() then
+        self.tttwhaleselection = "TTTJesterWhaleSelection"
+        self.tttwhaleguessed = "TTT_JesterWhaleGuessed"
+        self.tttwhaleselectrole = "TTT_JesterWhaleSelectRole"
+    elseif owner:IsIndependentWhale() then
+        self.tttwhaleselection = "TTTIndependentWhaleSelection"
+        self.tttwhaleguessed = "TTT_IndependentWhaleGuessed"
+        self.tttwhaleselectrole = "TTT_IndependentWhaleSelectRole"
+    else  
+        self.tttwhaleselection = "TTTMonsterWhaleSelection"
+        self.tttwhaleguessed = "TTT_MonsterWhaleGuessed"
+        self.tttwhaleselectrole = "TTT_MonsterWhaleSelectRole"
     end
 
     self:DrawShadow(false)
@@ -121,7 +147,7 @@ if SERVER then
         local owner = self:GetOwner()
         if not IsValid(owner) then return end
         if owner:IsRoleAbilityDisabled() then return end
-        local role = owner:GetNWInt("TTTInnocentWhaleSelection", ROLE_NONE)
+        local role = owner:GetNWInt(self.tttwhaleselection, ROLE_NONE)
         if role == ROLE_NONE then
             owner:QueueMessage(MSG_PRINTCENTER, "Select a role first!", 3)
             return
@@ -152,7 +178,7 @@ if SERVER then
         local owner = self:GetOwner()
         if not IsValid(owner) then return end
         if owner:IsRoleAbilityDisabled() then return end
-        local role = owner:GetNWInt("TTTInnocentWhaleSelection", ROLE_NONE)
+        local role = owner:GetNWInt(self.tttwhaleselection, ROLE_NONE)
 
         self:SetState(STATE_DONE)
         self:SetBeginTime(CurTime())
@@ -172,7 +198,7 @@ if SERVER then
         owner:StripRoleWeapons()
         RunHook("PlayerLoadout", owner)
         SendFullStateUpdate()
-        net.Start("TTT_InnocentWhaleGuessed")
+        net.Start(self.tttwhaleguessed)
         net.WriteBool(true)
         -- net.WriteString(ply:Nick())
         net.WriteString(owner:Nick())
@@ -270,7 +296,7 @@ function SWEP:SecondaryAttack()
     if CLIENT then
         local function AddRolesFromTeam(tbl, team)
             local bannedRoles = {}
-            local bannedRolesString = whaleinnocent_unguessable_roles:GetString()
+            local bannedRolesString = whale_unchoosable_roles:GetString()
             if #bannedRolesString > 0 then
                 bannedRoles = string.Explode(",", bannedRolesString)
             end
@@ -410,7 +436,7 @@ function SWEP:SecondaryAttack()
 
             dlist.OnActivePanelChanged = function(_, _, new)
                 if new.enabled then
-                    net.Start("TTT_InnocentWhaleSelectRole")
+                    net.Start(self.tttwhaleselectrole)
                     net.WriteInt(new.role, util.RoleBits())
                     net.SendToServer()
                     dframe:Close()

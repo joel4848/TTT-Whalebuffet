@@ -47,3 +47,7 @@ ROLE.translations = {
 }
 
 RegisterRole(ROLE)
+-- Shorten the display name after registering the role
+timer.Simple(5, function()
+    ROLE_STRINGS[ROLE_WHALEINNOCENT] = "Whale"
+end)
