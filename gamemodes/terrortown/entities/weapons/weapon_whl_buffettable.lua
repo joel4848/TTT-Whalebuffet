@@ -101,7 +101,7 @@ function SWEP:PrimaryAttack()
         if not IsValid(owner) then return end
         if owner:IsRoleAbilityDisabled() then return end
 
-        local role = owner:GetNWInt("TTTWhaleinnocentSelection", ROLE_NONE)
+        local role = owner:GetNWInt("TTTInnocentWhaleSelection", ROLE_NONE)
         if role == ROLE_NONE then
             owner:QueueMessage(MSG_PRINTCENTER, "Select a role first!", 1)
             return
@@ -113,21 +113,21 @@ function SWEP:PrimaryAttack()
             local ply = tr.Entity
             local radius = GetConVar("ttt_whaleinnocent_minimum_radius"):GetFloat() * UNITS_PER_METER
             if radius == 0 or ply:GetPos():Distance(owner:GetPos()) <= radius then
-                if ply:GetNWBool("TTTWhaleinnocentWasWhaleinnocent", false) then
+                if ply:GetNWBool("TTTInnocentWhaleWasWhaleinnocent", false) then
                     owner:QueueMessage(MSG_PRINTCENTER, "That player was previously " .. ROLE_STRINGS_EXT[ROLE_WHALEINNOCENT] .. " and so cannot be guessed!")
                     return
                 end
 
                 for _, v in PlayerIterator() do
-                    v:SetNWFloat("TTTWhaleinnocentDamageDealt", 0)
+                    v:SetNWFloat("TTTInnocentWhaleDamageDealt", 0)
                 end
 
                 if ply:IsRole(role) then
                     owner:QueueMessage(MSG_PRINTBOTH, "You guessed correctly and have become " .. ROLE_STRINGS_EXT[role] .. "!")
-                    owner:SetNWBool("TTTWhaleinnocentWasWhaleinnocent", true)
+                    owner:SetNWBool("TTTInnocentWhaleWasWhaleinnocent", true)
                     CallHook("TTTPlayerRoleChangedByItem", nil, owner, owner, self)
 
-                    ply:SetNWString("TTTWhaleinnocentGuessedBy", owner:Nick())
+                    ply:SetNWString("TTTInnocentWhaleGuessedBy", owner:Nick())
                     ply:QueueMessage(MSG_PRINTBOTH, "Your role was guessed by " .. ROLE_STRINGS_EXT[ROLE_WHALEINNOCENT] .. " and you have taken their place!")
                     CallHook("TTTPlayerRoleChangedByItem", nil, owner, ply, self)
 

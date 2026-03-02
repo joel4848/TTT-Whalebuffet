@@ -32,7 +32,7 @@ local whaleinnocent_can_guess_detectives = GetConVar("ttt_whaleinnocent_can_gues
 net.Receive("TTT_WhaleinnocentSelectRole", function(_, ply)
     if ply:IsActiveInnocentWhale() then
         local role = net.ReadInt(util.RoleBits())
-        ply:SetNWInt("TTTWhaleinnocentSelection", role)
+        ply:SetNWInt("TTTInnocentWhaleSelection", role)
     end
 end)
 
@@ -44,9 +44,9 @@ end)
 
 AddHook("TTTPrepareRound", "Whaleinnocent_TTTPrepareRound", function()
     for _, v in PlayerIterator() do
-        v:SetNWInt("TTTWhaleinnocentSelection", ROLE_NONE)
-        v:SetNWBool("TTTWhaleinnocentWasWhaleinnocent", false)
-        v:SetNWString("TTTWhaleinnocentGuessedBy", "")
-        v:SetNWFloat("TTTWhaleinnocentDamageDealt", 0)
+        v:SetNWInt("TTTInnocentWhaleSelection", ROLE_NONE)
+        v:SetNWBool("TTTInnocentWhaleWasWhaleinnocent", false)
+        v:SetNWString("TTTInnocentWhaleGuessedBy", "")
+        v:SetNWFloat("TTTInnocentWhaleDamageDealt", 0)
     end
 end)
