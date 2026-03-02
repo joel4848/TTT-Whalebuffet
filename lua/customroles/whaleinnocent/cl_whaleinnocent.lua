@@ -94,41 +94,7 @@ hook.Add("TTTTutorialRoleText", "Whaleinnocent_TTTTutorialRoleText", function(ro
     if role == ROLE_WHALEINNOCENT then
         local roleColor = GetRoleTeamColor(ROLE_TEAM_JESTER)
         local detectiveColor = ROLE_COLORS[ROLE_DETECTIVE]
-        local html = "The " .. ROLE_STRINGS[ROLE_WHALEINNOCENT] .. " is a <span style='color: rgb(" .. roleColor.r .. ", " .. roleColor.g .. ", " .. roleColor.b .. ")'>jester</span> role whose goal is to figure out and steal the roles of other players."
-
-        html = html .. "<span style='display: block; margin-top: 10px;'>If the " .. ROLE_STRINGS[ROLE_WHALEINNOCENT] .. " <span style='color: rgb(" .. roleColor.r .. ", " .. roleColor.g .. ", " .. roleColor.b .. ")'>correctly guesses</span> the role of another player, the " .. ROLE_STRINGS[ROLE_WHALEINNOCENT] .. " swaps roles with the player they guessed and takes over the goal of their new role. However if they <span style='color: rgb(" .. roleColor.r .. ", " .. roleColor.g .. ", " .. roleColor.b .. ")'>incorrectly guess</span> another player's role the " .. ROLE_STRINGS[ROLE_WHALEINNOCENT] .. " dies instead.</span>"
-
-        html = html .. "<span style='display: block; margin-top: 10px;'>After swapping roles, the new " .. ROLE_STRINGS[ROLE_WHALEINNOCENT] .. " <span style='color: rgb(" .. roleColor.r .. ", " .. roleColor.g .. ", " .. roleColor.b .. ")'>cannot guess</span> the roles of any players that were previously " .. ROLE_STRINGS_EXT[ROLE_WHALEINNOCENT] .. " and must guess someone else's role instead.</span>"
-
-        local unguessableRoles = {}
-        local unguessableRolesString = GetConVar("TTT_InnocentWhale_unguessable_roles"):GetString()
-        if #unguessableRolesString > 0 then
-            unguessableRoles = string.Explode(",", unguessableRolesString)
-        end
-        local bannedRoles = ""
-        local addComma = false
-        for k, v in pairs(unguessableRoles) do
-            local bannedRole = table.KeyFromValue(ROLE_STRINGS_RAW, v)
-            if bannedRole then
-                if addComma then bannedRoles = bannedRoles .. "," end
-                bannedRoles = bannedRoles .. " " .. ROLE_STRINGS[bannedRole]
-                addComma = true
-            end
-        end
-        if not whaleinnocent_can_guess_detectives:GetBool() then
-            html = html .. "<span style='display: block; margin-top: 10px;'>The " .. ROLE_STRINGS[ROLE_WHALEINNOCENT] .. " <span style='color: rgb(" .. roleColor.r .. ", " .. roleColor.g .. ", " .. roleColor.b .. ")'>cannot</span> guess the roles of <span style='color: rgb(" .. detectiveColor.r .. ", " .. detectiveColor.g .. ", " .. detectiveColor.b .. ")'>detectives</span>"
-            if #bannedRoles > 0 then
-                html = html .. " or any of the following roles:" .. bannedRoles
-            end
-            html = html .. ".</span>"
-        elseif #bannedRoles > 0 then
-            html = html .. "<span style='display: block; margin-top: 10px;'>The " .. ROLE_STRINGS[ROLE_WHALEINNOCENT] .. " <span style='color: rgb(" .. roleColor.r .. ", " .. roleColor.g .. ", " .. roleColor.b .. ")'>cannot</span> guess any of the following roles:" .. bannedRoles .. ".</span>"
-        end
-
-        if whaleinnocent_warn_all:GetBool() then
-            html = html .. "<span style='display: block; margin-top: 10px;'>All players are <span style='color: rgb(" .. roleColor.r .. ", " .. roleColor.g .. ", " .. roleColor.b .. ")'>warned</span> when there is "  .. ROLE_STRINGS_EXT[ROLE_WHALEINNOCENT] .. " in the game.</span>"
-        end
-
+        local html = "The " .. ROLE_STRINGS[ROLE_WHALEINNOCENT] .. " is an <span style='color: rgb(" .. roleColor.r .. ", " .. roleColor.g .. ", " .. roleColor.b .. ")'>innocent</span> role who can become any other innocent role of their choice."
         return html
     end
 end)

@@ -108,40 +108,6 @@ function SWEP:Deploy()
     return true
 end
 
--- function SWEP:PrimaryAttack()
---     self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
---     if SERVER then
---         local owner = self:GetOwner()
---         if not IsValid(owner) then return end
---         if owner:IsRoleAbilityDisabled() then return end
--- 
---         local role = owner:GetNWInt("TTTInnocentWhaleSelection", ROLE_NONE)
---         if role == ROLE_NONE then
--- 
---             owner:QueueMessage(MSG_PRINTCENTER, "Select a role first!", 1)
---             return
--- 
---         else
--- 
---             owner:SetRole(role)
---             owner:StripRoleWeapons()
---             RunHook("PlayerLoadout", owner)
--- 
---             SendFullStateUpdate()
--- 
---             net.Start("TTT_InnocentWhaleGuessed")
---             net.WriteBool(true)
---             -- net.WriteString(ply:Nick())
---             net.WriteString(owner:Nick())
---             net.Broadcast()
--- 
---             self:Remove()
--- 
---         end
--- 
---     end
--- end
-
 if SERVER then
 
     util.AddNetworkString("RoleChange_Success")
@@ -160,9 +126,6 @@ if SERVER then
             owner:QueueMessage(MSG_PRINTCENTER, "Select a role first!", 3)
             return
         else
-
-
-
 
             self:SetState(STATE_BUSY)
             self:SetBeginTime(CurTime())
