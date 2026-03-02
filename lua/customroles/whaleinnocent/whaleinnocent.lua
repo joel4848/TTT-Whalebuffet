@@ -15,10 +15,10 @@ util.AddNetworkString("TTT_InnocentWhaleGuessed")
 -- CONVARS --
 -------------
 
-CreateConVar("TTT_InnocentWhale_notify_mode", "0", FCVAR_NONE, "The logic to use when notifying players that a whaleinnocent was killed. Killer is notified unless \"TTT_InnocentWhale_notify_killer\" is disabled", 0, 4)
-CreateConVar("TTT_InnocentWhale_notify_killer", "1", FCVAR_NONE, "Whether to notify a whaleinnocent's killer", 0, 1)
-CreateConVar("TTT_InnocentWhale_notify_sound", "0", FCVAR_NONE, "Whether to play a cheering sound when a whaleinnocent is killed", 0, 1)
-CreateConVar("TTT_InnocentWhale_notify_confetti", "0", FCVAR_NONE, "Whether to throw confetti when a whaleinnocent is a killed", 0, 1)
+CreateConVar("ttt_innocentwhale_notify_mode", "0", FCVAR_NONE, "The logic to use when notifying players that a whaleinnocent was killed. Killer is notified unless \"TTT_InnocentWhale_notify_killer\" is disabled", 0, 4)
+CreateConVar("ttt_innocentwhale_notify_killer", "1", FCVAR_NONE, "Whether to notify a whaleinnocent's killer", 0, 1)
+CreateConVar("ttt_innocentwhale_notify_sound", "0", FCVAR_NONE, "Whether to play a cheering sound when a whaleinnocent is killed", 0, 1)
+CreateConVar("ttt_innocentwhale_notify_confetti", "0", FCVAR_NONE, "Whether to throw confetti when a whaleinnocent is a killed", 0, 1)
 
 local whaleinnocent_show_team_threshold = GetConVar("TTT_InnocentWhale_show_team_threshold")
 local whaleinnocent_show_role_threshold = GetConVar("TTT_InnocentWhale_show_role_threshold")

@@ -68,9 +68,9 @@ SWEP.InLoadoutFor           = {ROLE_WHALEINNOCENT}
 SWEP.InLoadoutForDefault    = {ROLE_WHALEINNOCENT}
 
 if SERVER then
-    CreateConVar("TTT_InnocentWhale_minimum_radius", "5", FCVAR_NONE, "The minimum radius of the whaleinnocent's device in meters. Set to 0 to disable", 0, 30)
+    CreateConVar("ttt_innocentwhale_minimum_radius", "5", FCVAR_NONE, "The minimum radius of the whaleinnocent's device in meters. Set to 0 to disable", 0, 30)
 end
-local whaleinnocent_unguessable_roles = CreateConVar("TTT_InnocentWhale_unguessable_roles", "lootgoblin,zombie", FCVAR_REPLICATED, "Names of roles that cannot be guessed by the whaleinnocent, separated with commas. Do not include spaces or capital letters.")
+local whaleinnocent_unguessable_roles = CreateConVar("ttt_innocentwhale_unguessable_roles", "", FCVAR_REPLICATED, "Names of roles that cannot be guessed by the whaleinnocent, separated with commas. Do not include spaces or capital letters.")
 
 SWEP.RoleChangeTime = 3 -- seconds required to complete
 
@@ -325,21 +325,31 @@ function SWEP:SecondaryAttack()
             end
         end
 
+        local owner = self:GetOwner()
+
         local detectives = {}
-        TableInsert(detectives, ROLE_DETECTIVE)
-        AddRolesFromTeam(detectives, ROLE_TEAM_DETECTIVE)
         local innocents = {}
-        TableInsert(innocents, ROLE_INNOCENT)
-        AddRolesFromTeam(innocents, ROLE_TEAM_INNOCENT)
         local traitors = {}
-        TableInsert(traitors, ROLE_TRAITOR)
-        AddRolesFromTeam(traitors, ROLE_TEAM_TRAITOR)
         local jesters = {}
-        AddRolesFromTeam(jesters, ROLE_TEAM_JESTER)
         local independents = {}
-        AddRolesFromTeam(independents, ROLE_TEAM_INDEPENDENT)
         local monsters = {}
-        AddRolesFromTeam(monsters, ROLE_TEAM_MONSTER)
+
+        if owner:IsDetectiveTeam() then
+            TableInsert(detectives, ROLE_DETECTIVE)
+            AddRolesFromTeam(detectives, ROLE_TEAM_DETECTIVE)
+        elseif owner:IsInnocentTeam() then
+            TableInsert(innocents, ROLE_INNOCENT)
+            AddRolesFromTeam(innocents, ROLE_TEAM_INNOCENT)
+        elseif owner:IsTraitorTeam() then
+            TableInsert(traitors, ROLE_TRAITOR)
+            AddRolesFromTeam(traitors, ROLE_TEAM_TRAITOR)
+        elseif owner:IsJesterTeam() then
+            AddRolesFromTeam(jesters, ROLE_TEAM_JESTER)
+        elseif owner:IsIndependentTeam() then
+            AddRolesFromTeam(independents, ROLE_TEAM_INDEPENDENT)
+        else
+            AddRolesFromTeam(monsters, ROLE_TEAM_MONSTER)
+        end
 
         local largestTeam       = MathMax(#detectives, #innocents, #traitors, #jesters, #independents, #monsters)
         local columns           = MathClamp(largestTeam, 4, 8)
