@@ -9,10 +9,10 @@ local Utf8Upper = utf8.upper
 -- CONVARS --
 -------------
 
-local whaleinnocent_show_team_threshold = GetConVar("ttt_whaleinnocent_show_team_threshold")
-local whaleinnocent_show_role_threshold = GetConVar("ttt_whaleinnocent_show_role_threshold")
-local whaleinnocent_can_guess_detectives = GetConVar("ttt_whaleinnocent_can_guess_detectives")
-local whaleinnocent_warn_all = GetConVar("ttt_whaleinnocent_warn_all")
+local whaleinnocent_show_team_threshold = GetConVar("TTT_InnocentWhale_show_team_threshold")
+local whaleinnocent_show_role_threshold = GetConVar("TTT_InnocentWhale_show_role_threshold")
+local whaleinnocent_can_guess_detectives = GetConVar("TTT_InnocentWhale_can_guess_detectives")
+local whaleinnocent_warn_all = GetConVar("TTT_InnocentWhale_warn_all")
 local glitch_mode = GetConVar("ttt_glitch_mode")
 local hide_role = GetConVar("ttt_hide_role")
 
@@ -101,7 +101,7 @@ hook.Add("TTTTutorialRoleText", "Whaleinnocent_TTTTutorialRoleText", function(ro
         html = html .. "<span style='display: block; margin-top: 10px;'>After swapping roles, the new " .. ROLE_STRINGS[ROLE_WHALEINNOCENT] .. " <span style='color: rgb(" .. roleColor.r .. ", " .. roleColor.g .. ", " .. roleColor.b .. ")'>cannot guess</span> the roles of any players that were previously " .. ROLE_STRINGS_EXT[ROLE_WHALEINNOCENT] .. " and must guess someone else's role instead.</span>"
 
         local unguessableRoles = {}
-        local unguessableRolesString = GetConVar("ttt_whaleinnocent_unguessable_roles"):GetString()
+        local unguessableRolesString = GetConVar("TTT_InnocentWhale_unguessable_roles"):GetString()
         if #unguessableRolesString > 0 then
             unguessableRoles = string.Explode(",", unguessableRolesString)
         end

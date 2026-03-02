@@ -68,15 +68,29 @@ SWEP.InLoadoutFor           = {ROLE_WHALEINNOCENT}
 SWEP.InLoadoutForDefault    = {ROLE_WHALEINNOCENT}
 
 if SERVER then
-    CreateConVar("ttt_whaleinnocent_minimum_radius", "5", FCVAR_NONE, "The minimum radius of the whaleinnocent's device in meters. Set to 0 to disable", 0, 30)
+    CreateConVar("TTT_InnocentWhale_minimum_radius", "5", FCVAR_NONE, "The minimum radius of the whaleinnocent's device in meters. Set to 0 to disable", 0, 30)
 end
-local whaleinnocent_unguessable_roles = CreateConVar("ttt_whaleinnocent_unguessable_roles", "lootgoblin,zombie", FCVAR_REPLICATED, "Names of roles that cannot be guessed by the whaleinnocent, separated with commas. Do not include spaces or capital letters.")
+local whaleinnocent_unguessable_roles = CreateConVar("TTT_InnocentWhale_unguessable_roles", "lootgoblin,zombie", FCVAR_REPLICATED, "Names of roles that cannot be guessed by the whaleinnocent, separated with commas. Do not include spaces or capital letters.")
+
+SWEP.RoleChangeTime = 3 -- seconds required to complete
+
+local STATE_IDLE  = 0
+local STATE_BUSY  = 1
+local STATE_ERROR = 2
+local STATE_DONE  = 3
+
+function SWEP:SetupDataTables()
+    self:NetworkVar("Int", 0, "State")
+    self:NetworkVar("Float", 0, "BeginTime")
+    self:NetworkVar("String", 0, "Message")
+end
 
 function SWEP:Initialize()
     self:SendWeaponAnim(ACT_SLAM_DETONATOR_DRAW)
     if CLIENT then
         self:AddHUDHelp("whalebuffettable_help_pri", "whalebuffettable_help_sec", true)
     end
+    self:SetState(STATE_IDLE)
     return self.BaseClass.Initialize(self)
 end
 
@@ -94,75 +108,198 @@ function SWEP:Deploy()
     return true
 end
 
-function SWEP:PrimaryAttack()
-    self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
-    if SERVER then
+-- function SWEP:PrimaryAttack()
+--     self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
+--     if SERVER then
+--         local owner = self:GetOwner()
+--         if not IsValid(owner) then return end
+--         if owner:IsRoleAbilityDisabled() then return end
+-- 
+--         local role = owner:GetNWInt("TTTInnocentWhaleSelection", ROLE_NONE)
+--         if role == ROLE_NONE then
+-- 
+--             owner:QueueMessage(MSG_PRINTCENTER, "Select a role first!", 1)
+--             return
+-- 
+--         else
+-- 
+--             owner:SetRole(role)
+--             owner:StripRoleWeapons()
+--             RunHook("PlayerLoadout", owner)
+-- 
+--             SendFullStateUpdate()
+-- 
+--             net.Start("TTT_InnocentWhaleGuessed")
+--             net.WriteBool(true)
+--             -- net.WriteString(ply:Nick())
+--             net.WriteString(owner:Nick())
+--             net.Broadcast()
+-- 
+--             self:Remove()
+-- 
+--         end
+-- 
+--     end
+-- end
+
+if SERVER then
+
+    util.AddNetworkString("RoleChange_Success")
+
+    function SWEP:PrimaryAttack()
+        if self:GetState() ~= STATE_IDLE then return end
+
+        self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
+
+
         local owner = self:GetOwner()
         if not IsValid(owner) then return end
         if owner:IsRoleAbilityDisabled() then return end
-
         local role = owner:GetNWInt("TTTInnocentWhaleSelection", ROLE_NONE)
         if role == ROLE_NONE then
-            owner:QueueMessage(MSG_PRINTCENTER, "Select a role first!", 1)
+            owner:QueueMessage(MSG_PRINTCENTER, "Select a role first!", 3)
+            return
+        else
+
+
+
+
+            self:SetState(STATE_BUSY)
+            self:SetBeginTime(CurTime())
+            self:SetMessage("Changing role!")
+
+            self:GetOwner():EmitSound("items/nvg_on.wav", 75, 100)
+        end
+    end
+
+    function SWEP:Abort()
+        self:SetState(STATE_ERROR)
+        self:SetBeginTime(CurTime())
+        self:SetMessage("Role change aborted!")
+
+        timer.Simple(1.5, function()
+            if IsValid(self) then
+                self:SetState(STATE_IDLE)
+            end
+        end)
+    end
+
+    function SWEP:Success()
+
+        local owner = self:GetOwner()
+        if not IsValid(owner) then return end
+        if owner:IsRoleAbilityDisabled() then return end
+        local role = owner:GetNWInt("TTTInnocentWhaleSelection", ROLE_NONE)
+
+        self:SetState(STATE_DONE)
+        self:SetBeginTime(CurTime())
+        self:SetMessage("Role changed successfully!")
+        owner:QueueMessage(MSG_PRINTCENTER, "Role changed successfully!", 3)
+
+        net.Start("RoleChange_Success")
+        net.Send(self:GetOwner())
+
+        timer.Simple(1.5, function()
+            if IsValid(self) then
+                self:SetState(STATE_IDLE)
+            end
+        end)
+
+        owner:SetRole(role)
+        owner:StripRoleWeapons()
+        RunHook("PlayerLoadout", owner)
+        SendFullStateUpdate()
+        net.Start("TTT_InnocentWhaleGuessed")
+        net.WriteBool(true)
+        -- net.WriteString(ply:Nick())
+        net.WriteString(owner:Nick())
+        net.Broadcast()
+        self:Remove()
+
+        
+    end
+
+    function SWEP:Think()
+        if self:GetState() ~= STATE_BUSY then return end
+
+        local owner = self:GetOwner()
+        if not IsValid(owner) or not owner:KeyDown(IN_ATTACK) then
+            self:Abort()
             return
         end
 
-        local trace = util.GetPlayerTrace(owner)
-        local tr = util.TraceLine(trace)
-        if IsPlayer(tr.Entity) then
-            local ply = tr.Entity
-            local radius = GetConVar("ttt_whaleinnocent_minimum_radius"):GetFloat() * UNITS_PER_METER
-            if radius == 0 or ply:GetPos():Distance(owner:GetPos()) <= radius then
-                if ply:GetNWBool("TTTInnocentWhaleWasWhaleinnocent", false) then
-                    owner:QueueMessage(MSG_PRINTCENTER, "That player was previously " .. ROLE_STRINGS_EXT[ROLE_WHALEINNOCENT] .. " and so cannot be guessed!")
-                    return
-                end
-
-                for _, v in PlayerIterator() do
-                    v:SetNWFloat("TTTInnocentWhaleDamageDealt", 0)
-                end
-
-                if ply:IsRole(role) then
-                    owner:QueueMessage(MSG_PRINTBOTH, "You guessed correctly and have become " .. ROLE_STRINGS_EXT[role] .. "!")
-                    owner:SetNWBool("TTTInnocentWhaleWasWhaleinnocent", true)
-                    CallHook("TTTPlayerRoleChangedByItem", nil, owner, owner, self)
-
-                    ply:SetNWString("TTTInnocentWhaleGuessedBy", owner:Nick())
-                    ply:QueueMessage(MSG_PRINTBOTH, "Your role was guessed by " .. ROLE_STRINGS_EXT[ROLE_WHALEINNOCENT] .. " and you have taken their place!")
-                    CallHook("TTTPlayerRoleChangedByItem", nil, owner, ply, self)
-
-                    ply:MoveRoleState(owner)
-
-                    owner:SetRole(role)
-                    owner:StripRoleWeapons()
-                    RunHook("PlayerLoadout", owner)
-
-                    ply:SetRole(ROLE_WHALEINNOCENT)
-                    ply:StripRoleWeapons()
-                    RunHook("PlayerLoadout", ply)
-
-                    SendFullStateUpdate()
-
-                    net.Start("TTT_WhaleinnocentGuessed")
-                    net.WriteBool(true)
-                    net.WriteString(ply:Nick())
-                    net.WriteString(owner:Nick())
-                    net.Broadcast()
-
-                    self:Remove()
-                else
-                    owner:QueueMessage(MSG_PRINTBOTH, "You guessed incorrectly and have died!")
-                    net.Start("TTT_WhaleinnocentGuessed")
-                    net.WriteBool(false)
-                    net.WriteString(ply:Nick())
-                    net.WriteString(owner:Nick())
-                    net.Broadcast()
-                    owner:Kill()
-                end
-            end
+        if CurTime() >= self:GetBeginTime() + self.RoleChangeTime then
+            self:Success()
         end
     end
+
 end
+
+
+if CLIENT then
+    function SWEP:DrawHUD()
+        local baseClass = self.BaseClass
+        while baseClass.ClassName ~= "weapon_tttbase" do
+            baseClass = baseClass.BaseClass
+        end
+        baseClass.DrawHUD(self)
+
+        local STATE_IDLE  = 0
+        local STATE_BUSY  = 1
+        local STATE_ERROR = 2
+        local STATE_DONE  = 3
+
+        local state = self:GetState()
+        if state == STATE_IDLE then return end
+
+        local charge = self.RoleChangeTime
+        local time = self:GetBeginTime() + charge
+
+        local x = ScrW() / 2.0
+        local y = ScrH() / 2.0
+
+        y = y + (y / 3)
+
+        local w = 255
+
+        if state == STATE_BUSY then
+            if time < 0 then return end
+            local progress = math.min(1, 1 - ((time - CurTime()) / charge))
+            CRHUD:PaintProgressBar(
+                x,
+                y,
+                w,
+                Color(0, 255, 0, 155),
+                self:GetMessage(),
+                progress
+            )
+
+        elseif state == STATE_ERROR then
+            CRHUD:PaintProgressBar(
+                x,
+                y,
+                w,
+                Color(200 + math.sin(CurTime() * 32) * 50, 0, 0, 155),
+                self:GetMessage(),
+                1
+            )
+
+        elseif state == STATE_DONE then
+            CRHUD:PaintProgressBar(
+                x,
+                y,
+                w,
+                Color(0, 255, 0, 155),
+                self:GetMessage(),
+                1
+            )
+        end
+    end
+
+    function SWEP:PrimaryAttack() return false end
+end
+
+
 
 function SWEP:SecondaryAttack()
     if not IsFirstTimePredicted() then return end
@@ -176,7 +313,7 @@ function SWEP:SecondaryAttack()
             end
             local roles = {}
             for role = 3, ROLE_MAX do -- Skip over the three default roles as they will be added later to avoid sorting
-                if role == ROLE_WHALEINNOCENT or TableHasValue(bannedRoles, ROLE_STRINGS_RAW[role]) then
+                if role == ROLE_INNOCENT or TableHasValue(bannedRoles, ROLE_STRINGS_RAW[role]) then
                     continue
                 elseif (ROLE_STARTING_TEAM[role] == team or (not ROLE_STARTING_TEAM[role] and player.GetRoleTeam(role, false) == team)) and util.CanRoleSpawn(role) then
                     TableInsert(roles, role)
@@ -192,7 +329,7 @@ function SWEP:SecondaryAttack()
         TableInsert(detectives, ROLE_DETECTIVE)
         AddRolesFromTeam(detectives, ROLE_TEAM_DETECTIVE)
         local innocents = {}
-        TableInsert(innocents, ROLE_WHALEINNOCENT)
+        TableInsert(innocents, ROLE_INNOCENT)
         AddRolesFromTeam(innocents, ROLE_TEAM_INNOCENT)
         local traitors = {}
         TableInsert(traitors, ROLE_TRAITOR)
@@ -268,7 +405,7 @@ function SWEP:SecondaryAttack()
             dlabel:SetText(label)
             dlabel:SetContentAlignment(7)
             dlabel:SetWidth(listWidth)
-            dlabel:SetPos(m + 3, yOffset) -- For some reason the text isn't inline with the icons so we shift it 3px to the right
+            dlabel:SetPos(m + 3, yOffset) -- For some reason the text isn't in line with the icons so we shift it 3px to the right
 
             local dlist = vgui.Create("EquipSelect", dframe)
             dlist:SetPos(m, yOffset + labelHeight)
@@ -300,7 +437,7 @@ function SWEP:SecondaryAttack()
 
             dlist.OnActivePanelChanged = function(_, _, new)
                 if new.enabled then
-                    net.Start("TTT_WhaleinnocentSelectRole")
+                    net.Start("TTT_InnocentWhaleSelectRole")
                     net.WriteInt(new.role, util.RoleBits())
                     net.SendToServer()
                     dframe:Close()
