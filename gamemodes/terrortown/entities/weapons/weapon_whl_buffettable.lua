@@ -69,7 +69,7 @@ SWEP.InLoadoutForDefault    = {ROLE_WHALEINNOCENT, ROLE_WHALEDETECTIVE, ROLE_WHA
 
 local whale_unchoosable_roles = CreateConVar("ttt_whale_unchoosable_roles", "", FCVAR_REPLICATED, "Names of roles that cannot be chosen by whales, separated with commas. Do not include spaces or capital letters.")
 
-SWEP.RoleChangeTime = 3 -- seconds required to complete
+SWEP.RoleChangeTime = 2 -- seconds required to complete
 
 local STATE_IDLE  = 0
 local STATE_BUSY  = 1
