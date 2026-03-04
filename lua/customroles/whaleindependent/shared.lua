@@ -50,5 +50,9 @@ ROLE.translations = {
 RegisterRole(ROLE)
 -- Shorten the display name after registering the role
 timer.Simple(5, function()
-    ROLE_STRINGS[ROLE_WHALEINDEPENDENT] = "Whale"
+    if GetConVar("ttt_whaleindependent_is_true_whale"):GetBool() then
+        ROLE_STRINGS[ROLE_WHALEINDEPENDENT] = "True Whale"
+    else
+        ROLE_STRINGS[ROLE_WHALEINDEPENDENT] = "Whale"
+    end
 end)

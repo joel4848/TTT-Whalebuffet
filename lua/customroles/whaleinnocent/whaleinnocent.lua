@@ -17,7 +17,7 @@ util.AddNetworkString("TTT_InnocentWhaleGuessed")
 
 CreateConVar("ttt_whales_balance_innocent_traitor", "1", FCVAR_NONE, "Whether a round should always start with an equal number of innocent/detective whales and traitor Whales", 0, 1)
 
-local balanceteams = GetConVar("ttt_whales_balance_innocent_traitor")
+local balanceteams = GetConVar("ttt_whales_balance_innocent_traitor"):GetBool()
 
 -------------------
 -- ROLE FEATURES --
