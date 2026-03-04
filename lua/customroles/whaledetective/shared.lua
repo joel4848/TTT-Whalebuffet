@@ -28,6 +28,7 @@ ROLE.shortdesc = "Can choose which detective role they are this round."
 ROLE.team = ROLE_TEAM_DETECTIVE
 ROLE.startinghealth = nil
 ROLE.maxhealth = nil
+ROLE.startingcredits = 0
 
 ROLE.convars =
 {

@@ -28,6 +28,7 @@ ROLE.shortdesc = "Can choose which traitor role they are this round."
 ROLE.team = ROLE_TEAM_TRAITOR
 ROLE.startinghealth = nil
 ROLE.maxhealth = nil
+ROLE.startingcredits = 0
 
 ROLE.convars =
 {

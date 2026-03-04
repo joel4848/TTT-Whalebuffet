@@ -28,6 +28,7 @@ ROLE.shortdesc = "Can choose which independent role they are this round."
 ROLE.team = ROLE_TEAM_INDEPENDENT
 ROLE.startinghealth = nil
 ROLE.maxhealth = nil
+ROLE.startingcredits = 0
 
 ROLE.convars =
 {

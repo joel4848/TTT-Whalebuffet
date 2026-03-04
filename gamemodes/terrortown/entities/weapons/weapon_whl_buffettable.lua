@@ -136,6 +136,13 @@ end
 
 if SERVER then
 
+    local function clear_role_effects(owner)
+        owner:StripRoleWeapons()
+        owner:Give("weapon_zm_improvised")
+        owner:SetDefaultCredits()
+        SetRoleMaxHealth(owner)
+    end
+
     util.AddNetworkString("RoleChange_Success")
 
     function SWEP:PrimaryAttack()
@@ -194,8 +201,8 @@ if SERVER then
             end
         end)
 
-        owner:SetRole(role)
-        owner:StripRoleWeapons()
+        owner:SetRoleAndBroadcast(role)
+        clear_role_effects(owner)
         RunHook("PlayerLoadout", owner)
         SendFullStateUpdate()
         net.Start(self.tttwhaleguessed)
