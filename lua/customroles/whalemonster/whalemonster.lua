@@ -15,16 +15,6 @@ util.AddNetworkString("TTT_MonsterWhaleGuessed")
 -- CONVARS --
 -------------
 
-CreateConVar("ttt_monsterwhale_notify_mode", "0", FCVAR_NONE, "The logic to use when notifying players that a whalemonster was killed. Killer is notified unless \"TTT_MonsterWhale_notify_killer\" is disabled", 0, 4)
-CreateConVar("ttt_monsterwhale_notify_killer", "1", FCVAR_NONE, "Whether to notify a whalemonster's killer", 0, 1)
-CreateConVar("ttt_monsterwhale_notify_sound", "0", FCVAR_NONE, "Whether to play a cheering sound when a whalemonster is killed", 0, 1)
-CreateConVar("ttt_monsterwhale_notify_confetti", "0", FCVAR_NONE, "Whether to throw confetti when a whalemonster is a killed", 0, 1)
-
-local whalemonster_show_team_threshold = GetConVar("TTT_MonsterWhale_show_team_threshold")
-local whalemonster_show_role_threshold = GetConVar("TTT_MonsterWhale_show_role_threshold")
-local whalemonster_can_guess_detectives = GetConVar("TTT_MonsterWhale_can_guess_detectives")
--- local whalemonster_warn_all = GetConVar("TTT_MonsterWhale_warn_all")
-
 -------------------
 -- ROLE FEATURES --
 -------------------

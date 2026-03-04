@@ -1,6 +1,6 @@
 "UnlitGeneric"
 {
- "$basetexture" "vgui/ttt/roles/wlt/icon_wlt%"
+ "$basetexture" "vgui/ttt/roles/wlt/icon_wlt"
  "$vertexcolor" 1
  "$vertexalpha" 1
  "$translucent" 1

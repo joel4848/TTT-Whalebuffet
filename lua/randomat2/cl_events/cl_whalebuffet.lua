@@ -1,3 +1,5 @@
+if not Randomat or not Randomat.IsEventActive then return end
+
 local EVENT = {}
 EVENT.id = "whalebuffet"
 
