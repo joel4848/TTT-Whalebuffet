@@ -113,6 +113,8 @@ local function balance_teams_whales(p)
         end
     end
 
+    SendFullStateUpdate()
+
     local innocentWhales = {}
     local traitorWhales = {}
     for _, p in player.Iterator() do
