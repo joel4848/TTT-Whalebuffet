@@ -15,7 +15,7 @@ util.AddNetworkString("TTT_IndependentWhaleGuessed")
 -- CONVARS --
 -------------
 
-local truewhale = CreateConVar("ttt_whaleindependent_is_true_whale", "1", FCVAR_NONE, "Whether Independent Whales can pick ANY role", 0, 1):GetBool()
+local truewhale = GetConVar("ttt_whaleindependent_is_true_whale"):GetBool()
 
 -------------------
 -- ROLE FEATURES --

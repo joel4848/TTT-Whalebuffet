@@ -30,6 +30,8 @@ ROLE.startinghealth = nil
 ROLE.maxhealth = nil
 ROLE.startingcredits = 0
 
+CreateConVar("ttt_whaleindependent_is_true_whale", "1", FCVAR_REPLICATED, "Whether Independent Whales can pick ANY role", 0, 1):GetBool()
+
 ROLE.convars =
 {
 
