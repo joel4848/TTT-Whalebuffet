@@ -48,7 +48,7 @@ end)
 -- HUD --
 ---------
 
-AddHook("TTTHUDInfoPaint", "Whale_TTTHUDInfoPaint", function(client, label_left, label_top, active_labels)
+AddHook("TTTHUDInfoPaint", "Whaletraitor_TTTHUDInfoPaint", function(client, label_left, label_top, active_labels)
     if hide_role:GetBool() then return end
 
     if client:IsTraitorWhale() then
