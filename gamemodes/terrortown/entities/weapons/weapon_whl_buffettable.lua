@@ -1,69 +1,69 @@
 AddCSLuaFile()
 
-local vgui = vgui
-local net = net
+local vgui   = vgui
+local net    = net
 local player = player
-local util = util
+local util   = util
 
 local GetTranslation = LANG.GetTranslation
-local StringLower = string.lower
-local StringFind = string.find
-local TableInsert = table.insert
-local TableSort = table.sort
-local TableHasValue = table.HasValue
-local MathMax = math.max
-local MathClamp = math.Clamp
-local MathCeil = math.ceil
-local RunHook = hook.Run
+local StringLower    = string.lower
+local StringFind     = string.find
+local TableInsert    = table.insert
+local TableSort      = table.sort
+local TableHasValue  = table.HasValue
+local MathMax        = math.max
+local MathClamp      = math.Clamp
+local MathCeil       = math.ceil
+local RunHook        = hook.Run
 
 if CLIENT then
-    SWEP.PrintName          = "Buffet Table"
-    SWEP.Slot               = 8
+    SWEP.PrintName         = "Buffet Table"
+    SWEP.Slot              = 8
 
-    SWEP.ViewModelFOV       = 60
-    SWEP.DrawCrosshair      = false
-    SWEP.ViewModelFlip      = false
+    SWEP.ViewModelFOV      = 60
+    SWEP.DrawCrosshair     = false
+    SWEP.ViewModelFlip     = false
 end
 
-SWEP.ViewModel              = "models/weapons/c_slam.mdl"
-SWEP.WorldModel             = "models/weapons/w_slam.mdl"
-SWEP.Weight                 = 2
+SWEP.ViewModel             = "models/weapons/c_slam.mdl"
+SWEP.WorldModel            = "models/weapons/w_slam.mdl"
+SWEP.Weight                = 2
 
-SWEP.Base                   = "weapon_tttbase"
-SWEP.Category               = WEAPON_CATEGORY_ROLE
+SWEP.Base                  = "weapon_tttbase"
+SWEP.Category              = WEAPON_CATEGORY_ROLE
 
-SWEP.Spawnable              = false
-SWEP.AutoSpawnable          = false
-SWEP.HoldType               = "slam"
-SWEP.Kind                   = WEAPON_ROLE
+SWEP.Spawnable             = false
+SWEP.AutoSpawnable         = false
+SWEP.HoldType              = "slam"
+SWEP.Kind                  = WEAPON_ROLE
 
-SWEP.DeploySpeed            = 4
-SWEP.AllowDrop              = false
-SWEP.NoSights               = true
-SWEP.UseHands               = true
-SWEP.LimitedStock           = true
-SWEP.AmmoEnt                = nil
+SWEP.DeploySpeed           = 4
+SWEP.AllowDrop             = false
+SWEP.NoSights              = true
+SWEP.UseHands              = true
+SWEP.LimitedStock          = true
+SWEP.AmmoEnt               = nil
 
-SWEP.Primary.Delay          = 0.2
-SWEP.Primary.Automatic      = false
-SWEP.Primary.Cone           = 0
-SWEP.Primary.Ammo           = nil
-SWEP.Primary.ClipSize       = -1
-SWEP.Primary.ClipMax        = -1
-SWEP.Primary.DefaultClip    = -1
-SWEP.Primary.Sound          = ""
+SWEP.Primary.Delay         = 0.2
+SWEP.Primary.Automatic     = false
+SWEP.Primary.Cone          = 0
+SWEP.Primary.Ammo          = nil
+SWEP.Primary.ClipSize      = -1
+SWEP.Primary.ClipMax       = -1
+SWEP.Primary.DefaultClip   = -1
+SWEP.Primary.Sound         = ""
 
-SWEP.Secondary.Delay        = 0.2
-SWEP.Secondary.Automatic    = false
-SWEP.Secondary.Cone         = 0
-SWEP.Secondary.Ammo         = nil
-SWEP.Secondary.ClipSize     = -1
-SWEP.Secondary.ClipMax      = -1
-SWEP.Secondary.DefaultClip  = -1
-SWEP.Secondary.Sound        = ""
+SWEP.Secondary.Delay       = 0.2
+SWEP.Secondary.Automatic   = false
+SWEP.Secondary.Cone        = 0
+SWEP.Secondary.Ammo        = nil
+SWEP.Secondary.ClipSize    = -1
+SWEP.Secondary.ClipMax     = -1
+SWEP.Secondary.DefaultClip = -1
+SWEP.Secondary.Sound       = ""
 
-SWEP.InLoadoutFor           = {ROLE_WHALEINNOCENT, ROLE_WHALEDETECTIVE, ROLE_WHALEINDEPENDENT, ROLE_WHALEJESTER, ROLE_WHALEMONSTER, ROLE_WHALETRAITOR}
-SWEP.InLoadoutForDefault    = {ROLE_WHALEINNOCENT, ROLE_WHALEDETECTIVE, ROLE_WHALEINDEPENDENT, ROLE_WHALEJESTER, ROLE_WHALEMONSTER, ROLE_WHALETRAITOR}
+SWEP.InLoadoutFor        = {ROLE_WHALEINNOCENT, ROLE_WHALEDETECTIVE, ROLE_WHALEINDEPENDENT, ROLE_WHALEJESTER, ROLE_WHALEMONSTER, ROLE_WHALETRAITOR}
+SWEP.InLoadoutForDefault = {ROLE_WHALEINNOCENT, ROLE_WHALEDETECTIVE, ROLE_WHALEINDEPENDENT, ROLE_WHALEJESTER, ROLE_WHALEMONSTER, ROLE_WHALETRAITOR}
 
 local whale_unchoosable_roles = CreateConVar("ttt_whale_unchoosable_roles", "", FCVAR_REPLICATED, "Names of roles that cannot be chosen by whales, separated with commas. Do not include spaces or capital letters.")
 local truewhale = GetConVar("ttt_whaleindependent_is_true_whale"):GetBool()
@@ -87,7 +87,6 @@ function SWEP:Initialize()
         self:AddHUDHelp("whalebuffettable_help_pri", "whalebuffettable_help_sec", true)
     end
     self:SetState(STATE_IDLE)
-
 
     return self.BaseClass.Initialize(self)
 end
@@ -134,7 +133,6 @@ function SWEP:Deploy()
 end
 
 if SERVER then
-
     local function clear_role_effects(owner)
         owner:StripRoleWeapons()
         owner:Give("weapon_zm_improvised")
@@ -148,7 +146,6 @@ if SERVER then
         if self:GetState() ~= STATE_IDLE then return end
 
         self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
-
 
         local owner = self:GetOwner()
         if not IsValid(owner) then return end
@@ -180,7 +177,6 @@ if SERVER then
     end
 
     function SWEP:Success()
-
         local owner = self:GetOwner()
         if not IsValid(owner) then return end
         if owner:IsRoleAbilityDisabled() then return end
@@ -206,12 +202,9 @@ if SERVER then
         SendFullStateUpdate()
         net.Start(self.tttwhaleguessed)
         net.WriteBool(true)
-        -- net.WriteString(ply:Nick())
         net.WriteString(owner:Nick())
         net.Broadcast()
         self:Remove()
-
-
     end
 
     function SWEP:Think()
@@ -227,9 +220,7 @@ if SERVER then
             self:Success()
         end
     end
-
 end
-
 
 if CLIENT then
     function SWEP:DrawHUD()
@@ -292,6 +283,7 @@ end
 function SWEP:SecondaryAttack()
     if not IsFirstTimePredicted() then return end
     self:SetNextSecondaryFire(CurTime() + self.Secondary.Delay)
+
     if CLIENT then
         local function AddRolesFromTeam(tbl, team)
             local bannedRoles = {}
@@ -315,12 +307,12 @@ function SWEP:SecondaryAttack()
 
         local owner = self:GetOwner()
 
-        local detectives = {}
-        local innocents = {}
-        local traitors = {}
-        local jesters = {}
+        local detectives   = {}
+        local innocents    = {}
+        local traitors     = {}
+        local jesters      = {}
         local independents = {}
-        local monsters = {}
+        local monsters     = {}
 
         if owner:IsDetectiveTeam() then
             TableInsert(detectives, ROLE_DETECTIVE)
@@ -351,14 +343,14 @@ function SWEP:SecondaryAttack()
             AddRolesFromTeam(monsters, ROLE_TEAM_MONSTER)
         end
 
-        local largestTeam       = MathMax(#detectives, #innocents, #traitors, #jesters, #independents, #monsters)
-        local columns           = MathClamp(largestTeam, 4, 8)
-        local detectiveRows     = MathCeil(#detectives / columns)
-        local innocentRows      = MathCeil(#innocents / columns)
-        local traitorRows       = MathCeil(#traitors / columns)
-        local jesterRows        = MathCeil(#jesters / columns)
-        local independentRows   = MathCeil(#independents / columns)
-        local monsterRows       = MathCeil(#monsters / columns)
+        local largestTeam     = MathMax(#detectives, #innocents, #traitors, #jesters, #independents, #monsters)
+        local columns         = MathClamp(largestTeam, 4, 8)
+        local detectiveRows   = MathCeil(#detectives / columns)
+        local innocentRows    = MathCeil(#innocents / columns)
+        local traitorRows     = MathCeil(#traitors / columns)
+        local jesterRows      = MathCeil(#jesters / columns)
+        local independentRows = MathCeil(#independents / columns)
+        local monsterRows     = MathCeil(#monsters / columns)
 
         local function IsLabelNeeded(tbl)
             return #tbl == 0 and 0 or 1
@@ -374,13 +366,13 @@ function SWEP:SecondaryAttack()
         local m             = 5
 
         -- list sizes
-        local listWidth             = (itemSize + 2) * columns
-        local detectivesHeight      = MathMax((itemSize + 2) * detectiveRows + 2, 0)
-        local innocentsHeight       = MathMax((itemSize + 2) * innocentRows + 2, 0)
-        local traitorsHeight        = MathMax((itemSize + 2) * traitorRows + 2, 0)
-        local jestersHeight         = MathMax((itemSize + 2) * jesterRows + 2, 0)
-        local independentsHeight    = MathMax((itemSize + 2) * independentRows + 2, 0)
-        local monstersHeight        = MathMax((itemSize + 2) * monsterRows + 2, 0)
+        local listWidth          = (itemSize + 2) * columns
+        local detectivesHeight   = MathMax((itemSize + 2) * detectiveRows + 2, 0)
+        local innocentsHeight    = MathMax((itemSize + 2) * innocentRows + 2, 0)
+        local traitorsHeight     = MathMax((itemSize + 2) * traitorRows + 2, 0)
+        local jestersHeight      = MathMax((itemSize + 2) * jesterRows + 2, 0)
+        local independentsHeight = MathMax((itemSize + 2) * independentRows + 2, 0)
+        local monstersHeight     = MathMax((itemSize + 2) * monsterRows + 2, 0)
 
         -- I worked this out from looking at screenshots and measuring how the bottom margin changes based on the number of labels. I don't know why this is needed or where these numbers come from!
         local bottomMarginOffset = (2 * labels) - 7
