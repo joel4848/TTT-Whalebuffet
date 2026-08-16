@@ -22,7 +22,7 @@ util.AddNetworkString("TTT_TraitorWhaleGuessed")
 net.Receive("TTT_TraitorWhaleSelectRole", function(_, ply)
     if ply:IsActiveTraitorWhale() then
         local role = net.ReadInt(util.RoleBits())
-        ply:SetNWInt("TTTTraitorWhaleSelection", role)
+        ply:SetNWInt("TTT_TraitorWhaleSelection", role)
     end
 end)
 
@@ -34,7 +34,7 @@ end)
 
 AddHook("TTTPrepareRound", "Whaletraitor_TTTPrepareRound", function()
     for _, v in PlayerIterator() do
-        v:SetNWInt("TTTTraitorWhaleSelection", ROLE_NONE)
+        v:SetNWInt("TTT_TraitorWhaleSelection", ROLE_NONE)
         v:SetNWBool("TTTTraitorWhaleWasTraitorWhale", false)
         v:SetNWString("TTTTraitorWhaleGuessedBy", "")
         v:SetNWFloat("TTTTraitorWhaleDamageDealt", 0)

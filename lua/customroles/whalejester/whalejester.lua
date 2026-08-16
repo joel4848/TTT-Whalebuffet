@@ -22,7 +22,7 @@ util.AddNetworkString("TTT_JesterWhaleGuessed")
 net.Receive("TTT_JesterWhaleSelectRole", function(_, ply)
     if ply:IsActiveJesterWhale() then
         local role = net.ReadInt(util.RoleBits())
-        ply:SetNWInt("TTTJesterWhaleSelection", role)
+        ply:SetNWInt("TTT_JesterWhaleSelection", role)
     end
 end)
 
@@ -34,7 +34,7 @@ end)
 
 AddHook("TTTPrepareRound", "Whalejester_TTTPrepareRound", function()
     for _, v in PlayerIterator() do
-        v:SetNWInt("TTTJesterWhaleSelection", ROLE_NONE)
+        v:SetNWInt("TTT_JesterWhaleSelection", ROLE_NONE)
         v:SetNWBool("TTTJesterWhaleWasJesterWhale", false)
         v:SetNWString("TTTJesterWhaleGuessedBy", "")
         v:SetNWFloat("TTTJesterWhaleDamageDealt", 0)

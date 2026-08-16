@@ -32,7 +32,7 @@ end
 net.Receive("TTT_InnocentWhaleSelectRole", function(_, ply)
     if ply:IsActiveInnocentWhale() then
         local role = net.ReadInt(util.RoleBits())
-        ply:SetNWInt("TTTInnocentWhaleSelection", role)
+        ply:SetNWInt("TTT_InnocentWhaleSelection", role)
     end
 end)
 
@@ -175,7 +175,7 @@ end
 
 AddHook("TTTPrepareRound", "Whaleinnocent_TTTPrepareRound", function()
     for _, v in PlayerIterator() do
-        v:SetNWInt("TTTInnocentWhaleSelection", ROLE_NONE)
+        v:SetNWInt("TTT_InnocentWhaleSelection", ROLE_NONE)
         v:SetNWBool("TTTInnocentWhaleWasInnocentWhale", false)
         v:SetNWString("TTTInnocentWhaleGuessedBy", "")
         v:SetNWFloat("TTTInnocentWhaleDamageDealt", 0)

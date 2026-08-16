@@ -24,7 +24,7 @@ local truewhale = GetConVar("ttt_whaleindependent_is_true_whale"):GetBool()
 net.Receive("TTT_IndependentWhaleSelectRole", function(_, ply)
     if ply:IsActiveIndependentWhale() then
         local role = net.ReadInt(util.RoleBits())
-        ply:SetNWInt("TTTIndependentWhaleSelection", role)
+        ply:SetNWInt("TTT_IndependentWhaleSelection", role)
     end
 end)
 
@@ -36,7 +36,7 @@ end)
 
 AddHook("TTTPrepareRound", "Whaleindependent_TTTPrepareRound", function()
     for _, v in PlayerIterator() do
-        v:SetNWInt("TTTIndependentWhaleSelection", ROLE_NONE)
+        v:SetNWInt("TTT_IndependentWhaleSelection", ROLE_NONE)
         v:SetNWBool("TTTIndependentWhaleWasIndependentWhale", false)
         v:SetNWString("TTTIndependentWhaleGuessedBy", "")
         v:SetNWFloat("TTTIndependentWhaleDamageDealt", 0)

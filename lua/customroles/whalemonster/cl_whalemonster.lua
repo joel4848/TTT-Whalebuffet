@@ -64,7 +64,7 @@ AddHook("TTTHUDInfoPaint", "Whalemonster_TTTHUDInfoPaint", function(client, labe
         surface.SetTextPos(label_left, ScrH() - label_top - h)
         surface.DrawText(text)
 
-        local role = client:GetNWInt("TTTMonsterWhaleSelection", ROLE_NONE)
+        local role = client:GetNWInt("TTT_MonsterWhaleSelection", ROLE_NONE)
         if role == ROLE_NONE then
             text = "None"
         else

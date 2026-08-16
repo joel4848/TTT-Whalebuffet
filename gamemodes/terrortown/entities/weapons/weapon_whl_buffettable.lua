@@ -5,7 +5,6 @@ local net = net
 local player = player
 local util = util
 
-local PlayerIterator = player.Iterator
 local GetTranslation = LANG.GetTranslation
 local StringLower = string.lower
 local StringFind = string.find
@@ -16,7 +15,6 @@ local MathMax = math.max
 local MathClamp = math.Clamp
 local MathCeil = math.ceil
 local RunHook = hook.Run
-local CallHook = hook.Call
 
 if CLIENT then
     SWEP.PrintName          = "Buffet Table"
@@ -105,28 +103,28 @@ function SWEP:Deploy()
 
     local owner = self:GetOwner()
     if owner:IsDetectiveWhale() then
-        self.tttwhaleselection = "TTTDetectiveWhaleSelection"
-        self.tttwhaleguessed = "TTT_DetectiveWhaleGuessed"
+        self.tttwhaleselection  = "TTT_DetectiveWhaleSelection"
+        self.tttwhaleguessed    = "TTT_DetectiveWhaleGuessed"
         self.tttwhaleselectrole = "TTT_DetectiveWhaleSelectRole"
     elseif owner:IsInnocentWhale() then
-        self.tttwhaleselection = "TTTInnocentWhaleSelection"
-        self.tttwhaleguessed = "TTT_InnocentWhaleGuessed"
+        self.tttwhaleselection  = "TTT_InnocentWhaleSelection"
+        self.tttwhaleguessed    = "TTT_InnocentWhaleGuessed"
         self.tttwhaleselectrole = "TTT_InnocentWhaleSelectRole"
     elseif owner:IsTraitorWhale() then
-        self.tttwhaleselection = "TTTTraitorWhaleSelection"
-        self.tttwhaleguessed = "TTT_TraitorWhaleGuessed"
+        self.tttwhaleselection  = "TTT_TraitorWhaleSelection"
+        self.tttwhaleguessed    = "TTT_TraitorWhaleGuessed"
         self.tttwhaleselectrole = "TTT_TraitorWhaleSelectRole"
     elseif owner:IsJesterWhale() then
-        self.tttwhaleselection = "TTTJesterWhaleSelection"
-        self.tttwhaleguessed = "TTT_JesterWhaleGuessed"
+        self.tttwhaleselection  = "TTT_JesterWhaleSelection"
+        self.tttwhaleguessed    = "TTT_JesterWhaleGuessed"
         self.tttwhaleselectrole = "TTT_JesterWhaleSelectRole"
     elseif owner:IsIndependentWhale() then
-        self.tttwhaleselection = "TTTIndependentWhaleSelection"
-        self.tttwhaleguessed = "TTT_IndependentWhaleGuessed"
+        self.tttwhaleselection  = "TTT_IndependentWhaleSelection"
+        self.tttwhaleguessed    = "TTT_IndependentWhaleGuessed"
         self.tttwhaleselectrole = "TTT_IndependentWhaleSelectRole"
-    else  
-        self.tttwhaleselection = "TTTMonsterWhaleSelection"
-        self.tttwhaleguessed = "TTT_MonsterWhaleGuessed"
+    else
+        self.tttwhaleselection  = "TTT_MonsterWhaleSelection"
+        self.tttwhaleguessed    = "TTT_MonsterWhaleGuessed"
         self.tttwhaleselectrole = "TTT_MonsterWhaleSelectRole"
     end
 
@@ -213,7 +211,7 @@ if SERVER then
         net.Broadcast()
         self:Remove()
 
-        
+
     end
 
     function SWEP:Think()
@@ -240,11 +238,6 @@ if CLIENT then
             baseClass = baseClass.BaseClass
         end
         baseClass.DrawHUD(self)
-
-        local STATE_IDLE  = 0
-        local STATE_BUSY  = 1
-        local STATE_ERROR = 2
-        local STATE_DONE  = 3
 
         local state = self:GetState()
         if state == STATE_IDLE then return end
@@ -295,8 +288,6 @@ if CLIENT then
 
     function SWEP:PrimaryAttack() return false end
 end
-
-
 
 function SWEP:SecondaryAttack()
     if not IsFirstTimePredicted() then return end
