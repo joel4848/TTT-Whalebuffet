@@ -100,33 +100,6 @@ function SWEP:Deploy()
         self:GetOwner():DrawViewModel(false)
     end
 
-    local owner = self:GetOwner()
-    if owner:IsDetectiveWhale() then
-        self.tttwhaleselection  = "TTT_DetectiveWhaleSelection"
-        self.tttwhaleguessed    = "TTT_DetectiveWhaleGuessed"
-        self.tttwhaleselectrole = "TTT_DetectiveWhaleSelectRole"
-    elseif owner:IsInnocentWhale() then
-        self.tttwhaleselection  = "TTT_InnocentWhaleSelection"
-        self.tttwhaleguessed    = "TTT_InnocentWhaleGuessed"
-        self.tttwhaleselectrole = "TTT_InnocentWhaleSelectRole"
-    elseif owner:IsTraitorWhale() then
-        self.tttwhaleselection  = "TTT_TraitorWhaleSelection"
-        self.tttwhaleguessed    = "TTT_TraitorWhaleGuessed"
-        self.tttwhaleselectrole = "TTT_TraitorWhaleSelectRole"
-    elseif owner:IsJesterWhale() then
-        self.tttwhaleselection  = "TTT_JesterWhaleSelection"
-        self.tttwhaleguessed    = "TTT_JesterWhaleGuessed"
-        self.tttwhaleselectrole = "TTT_JesterWhaleSelectRole"
-    elseif owner:IsIndependentWhale() then
-        self.tttwhaleselection  = "TTT_IndependentWhaleSelection"
-        self.tttwhaleguessed    = "TTT_IndependentWhaleGuessed"
-        self.tttwhaleselectrole = "TTT_IndependentWhaleSelectRole"
-    else
-        self.tttwhaleselection  = "TTT_MonsterWhaleSelection"
-        self.tttwhaleguessed    = "TTT_MonsterWhaleGuessed"
-        self.tttwhaleselectrole = "TTT_MonsterWhaleSelectRole"
-    end
-
     self:DrawShadow(false)
     self:SendWeaponAnim(ACT_SLAM_DETONATOR_DRAW)
     return true
@@ -285,6 +258,20 @@ function SWEP:SecondaryAttack()
     self:SetNextSecondaryFire(CurTime() + self.Secondary.Delay)
 
     if CLIENT then
+        local owner = self:GetOwner()
+
+        local roleTeam = "Monster"
+        if owner:IsDetectiveWhale()       then roleTeam = "Detective"
+        elseif owner:IsInnocentWhale()    then roleTeam = "Innocent"
+        elseif owner:IsTraitorWhale()     then roleTeam = "Traitor"
+        elseif owner:IsJesterWhale()      then roleTeam = "Jester"
+        elseif owner:IsIndependentWhale() then roleTeam = "Independent"
+        end
+
+        self.tttwhaleselection  = "TTT_" .. roleTeam .. "WhaleSelection"
+        self.tttwhaleguessed    = "TTT_" .. roleTeam .. "WhaleGuessed"
+        self.tttwhaleselectrole = "TTT_" .. roleTeam .. "WhaleSelectRole"
+
         local function AddRolesFromTeam(tbl, team)
             local bannedRoles = {}
             local bannedRolesString = whale_unchoosable_roles:GetString()
@@ -304,8 +291,6 @@ function SWEP:SecondaryAttack()
                 TableInsert(tbl, role)
             end
         end
-
-        local owner = self:GetOwner()
 
         local detectives   = {}
         local innocents    = {}
