@@ -17,41 +17,41 @@ local MathCeil       = math.ceil
 local RunHook        = hook.Run
 
 if CLIENT then
-    SWEP.PrintName         = "Buffet Table"
-    SWEP.Slot              = 8
+    SWEP.PrintName     = "Buffet Table"
+    SWEP.Slot          = 8
 
-    SWEP.ViewModelFOV      = 60
-    SWEP.DrawCrosshair     = false
-    SWEP.ViewModelFlip     = false
+    SWEP.ViewModelFOV  = 60
+    SWEP.DrawCrosshair = false
+    SWEP.ViewModelFlip = false
 end
 
-SWEP.ViewModel             = "models/weapons/c_slam.mdl"
-SWEP.WorldModel            = "models/weapons/w_slam.mdl"
-SWEP.Weight                = 2
+SWEP.ViewModel  = "models/weapons/c_slam.mdl"
+SWEP.WorldModel = "models/weapons/w_slam.mdl"
+SWEP.Weight     = 2
 
-SWEP.Base                  = "weapon_tttbase"
-SWEP.Category              = WEAPON_CATEGORY_ROLE
+SWEP.Base     = "weapon_tttbase"
+SWEP.Category = WEAPON_CATEGORY_ROLE
 
-SWEP.Spawnable             = false
-SWEP.AutoSpawnable         = false
-SWEP.HoldType              = "slam"
-SWEP.Kind                  = WEAPON_ROLE
+SWEP.Spawnable     = false
+SWEP.AutoSpawnable = false
+SWEP.HoldType      = "slam"
+SWEP.Kind          = WEAPON_ROLE
 
-SWEP.DeploySpeed           = 4
-SWEP.AllowDrop             = false
-SWEP.NoSights              = true
-SWEP.UseHands              = true
-SWEP.LimitedStock          = true
-SWEP.AmmoEnt               = nil
+SWEP.DeploySpeed  = 4
+SWEP.AllowDrop    = false
+SWEP.NoSights     = true
+SWEP.UseHands     = true
+SWEP.LimitedStock = true
+SWEP.AmmoEnt      = nil
 
-SWEP.Primary.Delay         = 0.2
-SWEP.Primary.Automatic     = false
-SWEP.Primary.Cone          = 0
-SWEP.Primary.Ammo          = nil
-SWEP.Primary.ClipSize      = -1
-SWEP.Primary.ClipMax       = -1
-SWEP.Primary.DefaultClip   = -1
-SWEP.Primary.Sound         = ""
+SWEP.Primary.Delay       = 0.2
+SWEP.Primary.Automatic   = false
+SWEP.Primary.Cone        = 0
+SWEP.Primary.Ammo        = nil
+SWEP.Primary.ClipSize    = -1
+SWEP.Primary.ClipMax     = -1
+SWEP.Primary.DefaultClip = -1
+SWEP.Primary.Sound       = ""
 
 SWEP.Secondary.Delay       = 0.2
 SWEP.Secondary.Automatic   = false
@@ -106,14 +106,21 @@ function SWEP:Deploy()
 end
 
 if SERVER then
+    util.AddNetworkString("TTT_WhaleSelectRole")
+
+    net.Receive("TTT_WhaleSelectRole", function(len, ply)
+        local role = net.ReadInt(util.RoleBits())
+        if IsValid(ply) and role then
+            ply:SetNWInt("TTT_WhaleSelection", role)
+        end
+    end)
+
     local function clear_role_effects(owner)
         owner:StripRoleWeapons()
         owner:Give("weapon_zm_improvised")
         owner:SetDefaultCredits()
         SetRoleMaxHealth(owner)
     end
-
-    util.AddNetworkString("RoleChange_Success")
 
     function SWEP:PrimaryAttack()
         if self:GetState() ~= STATE_IDLE then return end
@@ -123,12 +130,13 @@ if SERVER then
         local owner = self:GetOwner()
         if not IsValid(owner) then return end
         if owner:IsRoleAbilityDisabled() then return end
-        local role = owner:GetNWInt(self.tttwhaleselection, ROLE_NONE)
+
+        local role = owner:GetNWInt("TTT_WhaleSelection", ROLE_NONE)
+
         if role == ROLE_NONE then
             owner:QueueMessage(MSG_PRINTCENTER, "Select a role first!", 3)
             return
         else
-
             self:SetState(STATE_BUSY)
             self:SetBeginTime(CurTime())
             self:SetMessage("Changing role to " .. ROLE_STRINGS[role] .. "!")
@@ -153,15 +161,13 @@ if SERVER then
         local owner = self:GetOwner()
         if not IsValid(owner) then return end
         if owner:IsRoleAbilityDisabled() then return end
-        local role = owner:GetNWInt(self.tttwhaleselection, ROLE_NONE)
+
+        local role = owner:GetNWInt("TTT_WhaleSelection", ROLE_NONE)
 
         self:SetState(STATE_DONE)
         self:SetBeginTime(CurTime())
         self:SetMessage("Role changed successfully!")
         owner:QueueMessage(MSG_PRINTCENTER, "Role changed successfully to " .. ROLE_STRINGS[role] .. "!", 3)
-
-        net.Start("RoleChange_Success")
-        net.Send(self:GetOwner())
 
         timer.Simple(1.5, function()
             if IsValid(self) then
@@ -173,10 +179,7 @@ if SERVER then
         clear_role_effects(owner)
         RunHook("PlayerLoadout", owner)
         SendFullStateUpdate()
-        net.Start(self.tttwhaleguessed)
-        net.WriteBool(true)
-        net.WriteString(owner:Nick())
-        net.Broadcast()
+
         self:Remove()
     end
 
@@ -259,18 +262,6 @@ function SWEP:SecondaryAttack()
 
     if CLIENT then
         local owner = self:GetOwner()
-
-        local roleTeam = "Monster"
-        if owner:IsDetectiveWhale()       then roleTeam = "Detective"
-        elseif owner:IsInnocentWhale()    then roleTeam = "Innocent"
-        elseif owner:IsTraitorWhale()     then roleTeam = "Traitor"
-        elseif owner:IsJesterWhale()      then roleTeam = "Jester"
-        elseif owner:IsIndependentWhale() then roleTeam = "Independent"
-        end
-
-        self.tttwhaleselection  = "TTT_" .. roleTeam .. "WhaleSelection"
-        self.tttwhaleguessed    = "TTT_" .. roleTeam .. "WhaleGuessed"
-        self.tttwhaleselectrole = "TTT_" .. roleTeam .. "WhaleSelectRole"
 
         local function AddRolesFromTeam(tbl, team)
             local bannedRoles = {}
@@ -359,11 +350,10 @@ function SWEP:SecondaryAttack()
         local independentsHeight = MathMax((itemSize + 2) * independentRows + 2, 0)
         local monstersHeight     = MathMax((itemSize + 2) * monsterRows + 2, 0)
 
-        -- I worked this out from looking at screenshots and measuring how the bottom margin changes based on the number of labels. I don't know why this is needed or where these numbers come from!
         local bottomMarginOffset = (2 * labels) - 7
 
         -- frame size
-        local w = listWidth + (m * 2) + 2 -- For some reason the icons aren't centred horizontally so add 2px
+        local w = listWidth + (m * 2) + 2
         local h = detectivesHeight + innocentsHeight + traitorsHeight + jestersHeight + independentsHeight + monstersHeight
                 + (labelHeight * labels) + (m * 2) + headingHeight + searchHeight + bottomMarginOffset
 
@@ -377,7 +367,7 @@ function SWEP:SecondaryAttack()
         dframe:SetDeleteOnClose(true)
 
         local dsearch = vgui.Create("DTextEntry", dframe)
-        dsearch:SetPos(m + 2, m + headingHeight + 2) -- For some reason this is 2px higher than it should be so shift it down, also undo the extra width added above
+        dsearch:SetPos(m + 2, m + headingHeight + 2)
         dsearch:SetSize(listWidth - 2, searchHeight)
         dsearch:SetPlaceholderText("Search...")
         dsearch:SetUpdateOnType(true)
@@ -392,7 +382,7 @@ function SWEP:SecondaryAttack()
             dlabel:SetText(label)
             dlabel:SetContentAlignment(7)
             dlabel:SetWidth(listWidth)
-            dlabel:SetPos(m + 3, yOffset) -- For some reason the text isn't in line with the icons so we shift it 3px to the right
+            dlabel:SetPos(m + 3, yOffset)
 
             local dlist = vgui.Create("EquipSelect", dframe)
             dlist:SetPos(m, yOffset + labelHeight)
@@ -424,7 +414,7 @@ function SWEP:SecondaryAttack()
 
             dlist.OnActivePanelChanged = function(_, _, new)
                 if new.enabled then
-                    net.Start(self.tttwhaleselectrole)
+                    net.Start("TTT_WhaleSelectRole")
                     net.WriteInt(new.role, util.RoleBits())
                     net.SendToServer()
                     dframe:Close()
