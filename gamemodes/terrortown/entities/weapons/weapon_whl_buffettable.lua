@@ -66,6 +66,7 @@ SWEP.InLoadoutFor        = {ROLE_WHALEINNOCENT, ROLE_WHALEDETECTIVE, ROLE_WHALEI
 SWEP.InLoadoutForDefault = {ROLE_WHALEINNOCENT, ROLE_WHALEDETECTIVE, ROLE_WHALEINDEPENDENT, ROLE_WHALEJESTER, ROLE_WHALEMONSTER, ROLE_WHALETRAITOR}
 
 local whale_unchoosable_roles = CreateConVar("ttt_whale_unchoosable_roles", "", FCVAR_REPLICATED, "Names of roles that cannot be chosen by whales, separated with commas. Do not include spaces or capital letters.")
+local rolePackOnly = CreateConVar("ttt_whale_rolepack_only", 0, FCVAR_REPLICATED, "Whether only roles in the active role pack should be offered", 0, 1):GetBool()
 local truewhale = GetConVar("ttt_whaleindependent_is_true_whale"):GetBool()
 
 SWEP.RoleChangeTime = 2 -- seconds required to complete
@@ -271,10 +272,14 @@ function SWEP:SecondaryAttack()
             end
             local roles = {}
             for role = 3, ROLE_MAX do -- Skip over the three default roles as they will be added later to avoid sorting
-                if role == ROLE_INNOCENT or TableHasValue(bannedRoles, ROLE_STRINGS_RAW[role]) then
+                if role == ROLE_INNOCENT or TableHasValue(bannedRoles, ROLE_STRINGS_RAW[role]) or ROLE_BLOCK_SPAWN_CONVARS[role] then
                     continue
-                elseif (ROLE_STARTING_TEAM[role] == team or (not ROLE_STARTING_TEAM[role] and player.GetRoleTeam(role, false) == team)) and util.CanRoleSpawn(role) then
-                    TableInsert(roles, role)
+                else
+                    if rolePackOnly and DEFAULT_ROLES[role] or (ROLE_PACK_ROLES and ROLE_PACK_ROLES[role]) then
+                        TableInsert(roles, role)
+                    elseif (ROLE_STARTING_TEAM[role] == team or (not ROLE_STARTING_TEAM[role] and player.GetRoleTeam(role, false) == team)) then -- and util.CanRoleSpawn(role) then
+                        TableInsert(roles, role)
+                    end
                 end
             end
             TableSort(roles, function(a, b) return StringLower(ROLE_STRINGS[a]) < StringLower(ROLE_STRINGS[b]) end)
