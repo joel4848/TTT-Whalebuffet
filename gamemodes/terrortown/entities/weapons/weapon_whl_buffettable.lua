@@ -65,8 +65,8 @@ SWEP.Secondary.Sound       = ""
 SWEP.InLoadoutFor        = {ROLE_WHALEINNOCENT, ROLE_WHALEDETECTIVE, ROLE_WHALEINDEPENDENT, ROLE_WHALEJESTER, ROLE_WHALEMONSTER, ROLE_WHALETRAITOR}
 SWEP.InLoadoutForDefault = {ROLE_WHALEINNOCENT, ROLE_WHALEDETECTIVE, ROLE_WHALEINDEPENDENT, ROLE_WHALEJESTER, ROLE_WHALEMONSTER, ROLE_WHALETRAITOR}
 
-local whale_unchoosable_roles = CreateConVar("ttt_whale_unchoosable_roles", "", FCVAR_REPLICATED, "Names of roles that cannot be chosen by whales, separated with commas. Do not include spaces or capital letters.")
-local rolePackOnly = CreateConVar("ttt_whale_rolepack_only", 0, FCVAR_REPLICATED, "Whether only roles in the active role pack should be offered", 0, 1):GetBool()
+local whale_unchoosable_roles = CreateConVar("ttt_whale_unchoosable_roles", "", FCVAR_REPLICATED, "Raw names of roles to exclude")
+local role_pack_only = CreateConVar("ttt_whale_rolepack_only", 0, FCVAR_REPLICATED, "Whether only roles in the active role pack should be offered", 0, 1)
 local truewhale = GetConVar("ttt_whaleindependent_is_true_whale"):GetBool()
 
 SWEP.RoleChangeTime = 2 -- seconds required to complete
@@ -275,8 +275,12 @@ function SWEP:SecondaryAttack()
                 if role == ROLE_INNOCENT or TableHasValue(bannedRoles, ROLE_STRINGS_RAW[role]) or ROLE_BLOCK_SPAWN_CONVARS[role] then
                     continue
                 else
-                    if rolePackOnly and DEFAULT_ROLES[role] or (ROLE_PACK_ROLES and ROLE_PACK_ROLES[role]) then
-                        TableInsert(roles, role)
+                    if role_pack_only:GetBool() then
+                        if (DEFAULT_ROLES[role] or (ROLE_PACK_ROLES and ROLE_PACK_ROLES[role])) then
+                            if (ROLE_STARTING_TEAM[role] == team or (not ROLE_STARTING_TEAM[role] and player.GetRoleTeam(role, false) == team)) then
+                                TableInsert(roles, role)
+                            end
+                        end
                     elseif (ROLE_STARTING_TEAM[role] == team or (not ROLE_STARTING_TEAM[role] and player.GetRoleTeam(role, false) == team)) then -- and util.CanRoleSpawn(role) then
                         TableInsert(roles, role)
                     end

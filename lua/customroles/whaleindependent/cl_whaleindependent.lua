@@ -1,15 +1,11 @@
 local hook = hook
-local string = string
 
 local AddHook = hook.Add
-local StringUpper = string.upper
-local Utf8Upper = utf8.upper
 
 -------------
 -- CONVARS --
 -------------
 
-local glitch_mode = GetConVar("ttt_glitch_mode")
 local hide_role = GetConVar("ttt_hide_role")
 
 ------------------
@@ -82,6 +78,7 @@ AddHook("TTTHUDInfoPaint", "Whaleindependent_TTTHUDInfoPaint", function(client, 
         table.insert(active_labels, "whaleindependent")
     end
 end)
+
 --------------
 -- TUTORIAL --
 --------------
@@ -89,7 +86,6 @@ end)
 hook.Add("TTTTutorialRoleText", "Whaleindependent_TTTTutorialRoleText", function(role, titleLabel)
     if role == ROLE_WHALEINDEPENDENT then
         local roleColor = GetRoleTeamColor(ROLE_TEAM_INDEPDENDENT)
-        local detectiveColor = ROLE_COLORS[ROLE_DETECTIVE]
         local html = "The " .. ROLE_STRINGS[ROLE_WHALEINDEPENDENT] .. " is an <span style='color: rgb(" .. roleColor.r .. ", " .. roleColor.g .. ", " .. roleColor.b .. ")'>independent</span> role who can become any other independent role of their choice."
         return html
     end

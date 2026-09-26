@@ -11,12 +11,6 @@ local AddHook = hook.Add
 util.AddNetworkString("TTT_IndependentWhaleSelectRole")
 util.AddNetworkString("TTT_IndependentWhaleGuessed")
 
--------------
--- CONVARS --
--------------
-
-local truewhale = GetConVar("ttt_whaleindependent_is_true_whale"):GetBool()
-
 -------------------
 -- ROLE FEATURES --
 -------------------
@@ -27,8 +21,6 @@ net.Receive("TTT_IndependentWhaleSelectRole", function(_, ply)
         ply:SetNWInt("TTT_IndependentWhaleSelection", role)
     end
 end)
-
-
 
 -------------
 -- CLEANUP --

@@ -1,14 +1,3 @@
-local hook = hook
-local math = math
-local player = player
-local table = table
-
-local AddHook = hook.Add
-local MathMax = math.max
-local PlayerIterator = player.Iterator
-local TableInsert = table.insert
-local RemoveHook = hook.Remove
-
 local ROLE = {}
 
 ROLE.nameraw = "whaleindependent"

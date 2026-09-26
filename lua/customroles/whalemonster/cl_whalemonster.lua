@@ -1,15 +1,11 @@
 local hook = hook
-local string = string
 
 local AddHook = hook.Add
-local StringUpper = string.upper
-local Utf8Upper = utf8.upper
 
 -------------
 -- CONVARS --
 -------------
 
-local glitch_mode = GetConVar("ttt_glitch_mode")
 local hide_role = GetConVar("ttt_hide_role")
 
 ------------------
@@ -88,8 +84,7 @@ end)
 
 hook.Add("TTTTutorialRoleText", "Whalemonster_TTTTutorialRoleText", function(role, titleLabel)
     if role == ROLE_WHALEMONSTER then
-        local roleColor = GetRoleTeamColor(ROLE_TEAM_JESTER)
-        local detectiveColor = ROLE_COLORS[ROLE_DETECTIVE]
+        local roleColor = GetRoleTeamColor(ROLE_TEAM_MONSTER)
         local html = "The " .. ROLE_STRINGS[ROLE_WHALEMONSTER] .. " is a <span style='color: rgb(" .. roleColor.r .. ", " .. roleColor.g .. ", " .. roleColor.b .. ")'>monster</span> role who can become any other monster role of their choice."
         return html
     end

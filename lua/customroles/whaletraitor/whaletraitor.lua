@@ -11,10 +11,6 @@ local AddHook = hook.Add
 util.AddNetworkString("TTT_TraitorWhaleSelectRole")
 util.AddNetworkString("TTT_TraitorWhaleGuessed")
 
--------------
--- CONVARS --
--------------
-
 -------------------
 -- ROLE FEATURES --
 -------------------
@@ -25,8 +21,6 @@ net.Receive("TTT_TraitorWhaleSelectRole", function(_, ply)
         ply:SetNWInt("TTT_TraitorWhaleSelection", role)
     end
 end)
-
-
 
 -------------
 -- CLEANUP --

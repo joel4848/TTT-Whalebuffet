@@ -1,15 +1,11 @@
 local hook = hook
-local string = string
 
 local AddHook = hook.Add
-local StringUpper = string.upper
-local Utf8Upper = utf8.upper
 
 -------------
 -- CONVARS --
 -------------
 
-local glitch_mode = GetConVar("ttt_glitch_mode")
 local hide_role = GetConVar("ttt_hide_role")
 
 ------------------
@@ -88,9 +84,8 @@ end)
 
 hook.Add("TTTTutorialRoleText", "Whaledetective_TTTTutorialRoleText", function(role, titleLabel)
     if role == ROLE_WHALEDETECTIVE then
-        local roleColor = GetRoleTeamColor(ROLE_TEAM_JESTER)
-        local detectiveColor = ROLE_COLORS[ROLE_DETECTIVE]
-        local html = "The " .. ROLE_STRINGS[ROLE_WHALEDETECTIVE] .. " is an <span style='color: rgb(" .. roleColor.r .. ", " .. roleColor.g .. ", " .. roleColor.b .. ")'>detective</span> role who can become any other detective role of their choice."
+        local roleColor = GetRoleTeamColor(ROLE_TEAM_DETECTIVE)
+        local html = "The " .. ROLE_STRINGS[ROLE_WHALEDETECTIVE] .. " is a <span style='color: rgb(" .. roleColor.r .. ", " .. roleColor.g .. ", " .. roleColor.b .. ")'>detective</span> role who can become any other detective role of their choice."
         return html
     end
 end)
