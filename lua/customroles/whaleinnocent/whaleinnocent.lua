@@ -15,19 +15,11 @@ util.AddNetworkString("TTT_InnocentWhaleGuessed")
 -- CONVARS --
 -------------
 
-CreateConVar("ttt_whales_balance_innocent_traitor", "1", FCVAR_NONE, "Whether a round should always start with an equal number of innocent/detective whales and traitor Whales", 0, 1)
-
-local balanceteams = GetConVar("ttt_whales_balance_innocent_traitor"):GetBool()
+local balance_whales = CreateConVar("ttt_whales_balance_innocent_traitor", "1", FCVAR_NONE, "Whether a round should always start with an equal number of innocent/detective whales and traitor Whales", 0, 1)
 
 -------------------
 -- ROLE FEATURES --
 -------------------
-
-if Randomat or Randomat.IsEventActive then
-    local rdmtWhalebuffetActive = Randomat:IsEventActive(whalebuffet)
-else
-    local rdmtWhalebuffetActive = false
-end
 
 net.Receive("TTT_InnocentWhaleSelectRole", function(_, ply)
     if ply:IsActiveInnocentWhale() then
@@ -36,138 +28,109 @@ net.Receive("TTT_InnocentWhaleSelectRole", function(_, ply)
     end
 end)
 
-local function balance_teams_whales(p)
-    local innocentWhales = {}
-    local traitorWhales = {}
-    for _, p in player.Iterator() do
-        if p:IsInnocentWhale() then
-            table.insert(innocentWhales, p)
-        elseif p:IsDetectiveWhale() then
-            table.insert(innocentWhales, p)
-        elseif p:IsTraitorWhale() then
-            table.insert(traitorWhales, p)
+local function GetPlayerToConvert(first, second, third, fourth)
+    local tables = {first, second, third, fourth}
+
+    for _, tbl in ipairs(tables) do
+        if #tbl > 0 then
+            local choice = math.random(1, #tbl)
+            local target = tbl[choice]
+            table.remove(tbl, choice)
+            return target
         end
     end
 
-    local players = {}
-    local choices = {}
-    local innocents = {}
-    local traitors = {}
-    local specialInnocents = {}
-    local specialTraitors = {}
-    local detectives = {}
-
-    for _, p in player.Iterator() do
-        if IsValid(p) and not p:IsSpec() then
-            table.insert(players, p)
-            if p:GetRole() == ROLE_NONE then
-                table.insert(choices, p)
-            elseif p:IsInnocent() then
-                table.insert(innocents, p)
-            elseif p:IsTraitor() then
-                table.insert(traitors, p)
-            elseif p:IsInnocentTeam() and not p:IsDetectiveTeam() and not p:IsInnocentWhale() then
-                table.insert(specialInnocents, p)
-            elseif p:IsTraitorTeam() and not p:IsTraitorWhale() then
-                table.insert(specialTraitors, p)
-            elseif p:IsDetectiveTeam() and not p:IsDetectiveWhale() then
-                table.insert(detectives, p)
-            end
-        end
-    end
-
-    -- print("=============================================")
-    -- print("players: " .. #players)
-    -- print("choices: " .. #choices)
-    -- print("innocents: " .. #innocents)
-    -- print("traitors: " .. #traitors)
-    -- print("specialInnocents: " .. #specialInnocents)
-    -- print("specialTraitors: " .. #specialTraitors)
-    -- print("detectives: " .. #detectives)
-    -- print("=============================================")
-
-    if #innocentWhales > #traitorWhales then
-        if #choices > 0 then
-            table.Shuffle(choices)
-            choices[1]:SetRole(ROLE_WHALETRAITOR)
-        elseif #traitors > 0 then
-            table.Shuffle(traitors)
-            traitors[1]:SetRole(ROLE_WHALETRAITOR)
-        elseif #specialTraitors > 0 then
-            table.Shuffle(specialTraitors)
-            specialTraitors[1]:SetRole(ROLE_WHALETRAITOR)
-        end
-    elseif #innocentWhales < #traitorWhales then
-        if #choices > 0 then
-            table.Shuffle(choices)
-            choices[1]:SetRole(ROLE_WHALEINNOCENT)
-        elseif #innocents > 0 then
-            table.Shuffle(innocents)
-            innocents[1]:SetRole(ROLE_WHALEINNOCENT)
-        elseif #specialInnocents > 0 then
-            table.Shuffle(specialInnocents)
-            specialInnocents[1]:SetRole(ROLE_WHALEINNOCENT)
-        elseif #detectives > 0 then
-            table.Shuffle(detectives)
-            detectives[1]:SetRole(ROLE_WHALEDETECTIVE)
-        end
-    end
-
-    SendFullStateUpdate()
-
-    local innocentWhales = {}
-    local traitorWhales = {}
-    for _, p in player.Iterator() do
-        if p:IsInnocentWhale() then
-            table.insert(innocentWhales, p)
-        elseif p:IsDetectiveWhale() then
-            table.insert(innocentWhales, p)
-        elseif p:IsTraitorWhale() then
-            table.insert(traitorWhales, p)
-        end
-    end
-
-    if #innocentWhales ~= #traitorWhales then
-        if #innocentWhales > #traitorWhales and (#choices > 0 or #traitors > 0 or #specialTraitors > 0 or #detectives > 0) then
-            balance_teams_whales(p)
-            -- print("Ran balance teams I>T")
-        elseif #innocentWhales < #traitorWhales and (#choices > 0 or #innocents > 0 or #specialInnocents > 0) then
-            balance_teams_whales(p)
-            -- print("Ran balance teams I<T")
-        -- else
-        --     print ("Gave up")
-        end
-    end
+    return nil
 end
 
-if balanceteams and not rdmtWhalebuffetActive then
-    hook.Add("TTTBeginRound", "Whales_TTTBeginRound", function()
-        local innocentWhales = {}
-        local traitorWhales = {}
-        for _, p in player.Iterator() do
-            if p:IsInnocentWhale() then
-                table.insert(innocentWhales, p)
-            elseif p:IsDetectiveWhale() then
-                table.insert(innocentWhales, p)
-            elseif p:IsTraitorWhale() then
-                table.insert(traitorWhales, p)
+AddHook("TTTBeginRound", "Whales_TTTBeginRound", function()
+    -- Delay by a frame like the Twins
+    timer.Simple(0, function()
+        if not balance_whales:GetBool() then return end
+        if Randomat:IsEventActive(whalebuffet) then return end
+
+        local innocentWhaleCount = 0
+        local traitorWhaleCount  = 0
+
+        local noRole           = {}
+        local innocents        = {}
+        local traitors         = {}
+        local specialInnocents = {}
+        local specialTraitors  = {}
+        local detectives       = {}
+
+        -- Count Whales and put everyone else in the correct table as necessary
+        for _, ply in PlayerIterator() do
+            if not IsValid(ply) or ply:IsSpec() then continue end
+
+            if ply:IsInnocentWhale() or ply:IsDetectiveWhale() then
+                innocentWhaleCount = innocentWhaleCount + 1
+            elseif ply:IsTraitorWhale() then
+                traitorWhaleCount = traitorWhaleCount + 1
+            elseif ply:GetRole() == ROLE_NONE then
+                table.insert(noRole, ply)
+            elseif ply:IsInnocent() then
+                table.insert(innocents, ply)
+            elseif ply:IsTraitor() then
+                table.insert(traitors, ply)
+            elseif ply:IsInnocentTeam() and not ply:IsDetectiveTeam() then
+                table.insert(specialInnocents, ply)
+            elseif ply:IsTraitorTeam() then
+                table.insert(specialTraitors, ply)
+            elseif ply:IsDetectiveTeam() then
+                table.insert(detectives, ply)
             end
         end
 
-        -- print("Innocent Whales: " .. #innocentWhales)
-        -- print("Traitor Whales: " .. #traitorWhales)
+        -- Are Whales imbalanced?
+        local difference = innocentWhaleCount - traitorWhaleCount
+        if difference == 0 then return end
 
-        if #innocentWhales ~= #traitorWhales then
-            -- print("#innocentWhales ~= #traitorWhales")
-            balance_teams_whales(p)
+        table.Shuffle(noRole)
+        table.Shuffle(innocents)
+        table.Shuffle(traitors)
+        table.Shuffle(specialInnocents)
+        table.Shuffle(specialTraitors)
+        table.Shuffle(detectives)
+
+        local stateUpdateNeeded = false
+
+        if difference > 0 then
+            -- Need more Traitor Whales
+            for i = 1, difference do
+                local target = GetPlayerToConvert(noRole, traitors, specialTraitors)
+                if target then
+                    target:SetRole(ROLE_WHALETRAITOR)
+
+                    stateUpdateNeeded = true
+                else
+                    break
+                end
+            end
+        elseif difference < 0 then
+            -- Need more Innocent/Detective Whales
+            local needed = math.abs(difference)
+            for i = 1, needed do
+                local target = GetPlayerToConvert(noRole, innocents, specialInnocents, detectives)
+                if target then
+                    if target:IsDetectiveTeam() then
+                        target:SetRole(ROLE_WHALEDETECTIVE)
+                    else
+                        target:SetRole(ROLE_WHALEINNOCENT)
+                    end
+
+                    stateUpdateNeeded = true
+                else
+                    break
+                end
+            end
+        end
+
+        if stateUpdateNeeded then
+            SendFullStateUpdate()
         end
     end)
-end
-
-
-
-
-
+end)
 
 -------------
 -- CLEANUP --
