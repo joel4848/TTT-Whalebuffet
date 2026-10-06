@@ -13,24 +13,8 @@ local hide_role = GetConVar("ttt_hide_role")
 ------------------
 
 AddHook("Initialize", "Whaleinnocent_Translations_Initialize", function()
-    -- Weapons
-    LANG.AddToLanguage("english", "guessingdevice_help_pri", "Press {primaryfire} to guess a player's role.")
-    LANG.AddToLanguage("english", "guessingdevice_help_sec", "Press {secondaryfire} to select a role.")
-    LANG.AddToLanguage("english", "guessingdevice_title", "Role Whaleinnocent Selection")
-
     -- HUD
     LANG.AddToLanguage("english", "whaleinnocent_selection", "Role Selected: ")
-
-    -- Target ID
-    LANG.AddToLanguage("english", "whaleinnocent_unguessable", "UNGUESSABLE")
-
-    -- Scoring
-    LANG.AddToLanguage("english", "score_whaleinnocent_guessed_by", "Guessed by")
-
-    -- Events
-    LANG.AddToLanguage("english", "ev_whaleinnocent_correct", "{whaleinnocent} correctly guessed {victim}'s role")
-
-    LANG.AddToLanguage("english", "ev_whaleinnocent_incorrect", "{whaleinnocent} incorrectly guessed {victim}'s role")
 
     -- Cheat Sheet
     LANG.AddToLanguage("english", "cheatsheet_desc_whaleinnocent", "Must choose a role of their alignment to become.")

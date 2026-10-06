@@ -13,24 +13,8 @@ local hide_role = GetConVar("ttt_hide_role")
 ------------------
 
 AddHook("Initialize", "Whalejester_Translations_Initialize", function()
-    -- Weapons
-    LANG.AddToLanguage("english", "guessingdevice_help_pri", "Press {primaryfire} to guess a player's role.")
-    LANG.AddToLanguage("english", "guessingdevice_help_sec", "Press {secondaryfire} to select a role.")
-    LANG.AddToLanguage("english", "guessingdevice_title", "Role Whalejester Selection")
-
     -- HUD
     LANG.AddToLanguage("english", "whalejester_selection", "Role Selected: ")
-
-    -- Target ID
-    LANG.AddToLanguage("english", "whalejester_unguessable", "UNGUESSABLE")
-
-    -- Scoring
-    LANG.AddToLanguage("english", "score_whalejester_guessed_by", "Guessed by")
-
-    -- Events
-    LANG.AddToLanguage("english", "ev_whalejester_correct", "{whalejester} correctly guessed {victim}'s role")
-
-    LANG.AddToLanguage("english", "ev_whalejester_incorrect", "{whalejester} incorrectly guessed {victim}'s role")
 
     -- Cheat Sheet
     LANG.AddToLanguage("english", "cheatsheet_desc_whalejester", "Must choose a role of their alignment to become.")

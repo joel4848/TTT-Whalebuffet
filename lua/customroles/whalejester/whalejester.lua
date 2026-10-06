@@ -9,7 +9,6 @@ local PlayerIterator = player.Iterator
 local AddHook = hook.Add
 
 util.AddNetworkString("TTT_JesterWhaleSelectRole")
-util.AddNetworkString("TTT_JesterWhaleGuessed")
 
 -------------
 -- CONVARS --
@@ -36,7 +35,6 @@ AddHook("TTTPrepareRound", "Whalejester_TTTPrepareRound", function()
     for _, v in PlayerIterator() do
         v:SetNWInt("TTT_JesterWhaleSelection", ROLE_NONE)
         v:SetNWBool("TTTJesterWhaleWasJesterWhale", false)
-        v:SetNWString("TTTJesterWhaleGuessedBy", "")
         v:SetNWFloat("TTTJesterWhaleDamageDealt", 0)
     end
 end)
