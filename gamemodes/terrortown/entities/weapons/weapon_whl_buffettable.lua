@@ -67,7 +67,7 @@ SWEP.InLoadoutForDefault = {ROLE_WHALEINNOCENT, ROLE_WHALEDETECTIVE, ROLE_WHALEI
 
 local whale_unchoosable_roles = CreateConVar("ttt_whale_unchoosable_roles", "", FCVAR_REPLICATED, "Raw names of roles to exclude")
 local role_pack_only = CreateConVar("ttt_whale_rolepack_only", 0, FCVAR_REPLICATED, "Whether only roles in the active role pack should be offered", 0, 1)
-local truewhale = GetConVar("ttt_whaleindependent_is_true_whale"):GetBool()
+local truewhale = GetConVar("ttt_whaleindependent_is_true_whale")
 
 SWEP.RoleChangeTime = 2 -- seconds required to complete
 
@@ -311,7 +311,7 @@ function SWEP:SecondaryAttack()
         elseif owner:IsJesterTeam() then
             AddRolesFromTeam(jesters, ROLE_TEAM_JESTER)
         elseif owner:IsIndependentTeam() then
-            if truewhale then
+            if truewhale:GetBool() then
                 TableInsert(detectives, ROLE_DETECTIVE)
                 AddRolesFromTeam(detectives, ROLE_TEAM_DETECTIVE)
                 TableInsert(innocents, ROLE_INNOCENT)
